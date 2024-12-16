@@ -77,40 +77,6 @@ namespace ChatApp.Model
 
                     }
                 }
-
-                //try
-                //{
-
-                //    server.Start();
-                //    System.Diagnostics.Debug.WriteLine("Start listening...");
-                //    endPoint = server.AcceptTcpClient();
-                //    System.Diagnostics.Debug.WriteLine("Connection accepted!");
-                //    handleConnection(endPoint);
-
-                //}
-                //catch
-                //{
-
-                //    secondTry = true;
-                //}
-               
-
-                //if (secondTry)
-                //{
-
-                //    endPoint = new TcpClient();
-                //    try
-                //    {
-                //        System.Diagnostics.Debug.WriteLine("Connecting to the server...");
-                //        endPoint.Connect(ipEndPoint);
-                //        System.Diagnostics.Debug.WriteLine("Connection established!");
-                //        handleConnection(endPoint);
-                //    }
-                //    finally                    {
-                //        endPoint.Close();
-
-                //    }
-                //}
             });
 
             return true;

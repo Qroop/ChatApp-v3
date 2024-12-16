@@ -6,9 +6,6 @@
         xmlns:local="clr-namespace:Demo"
         mc:Ignorable="d"
         Title="MainWindow" Height="450" Width="800">
-    <!-- <Grid> --> 
-         <!-- <Button Content="Start" HorizontalAlignment="Center" Margin="0,217,0,0" VerticalAlignment="Top" Command="{Binding Path=StartGame}" Height="52" Width="180"/> -->
-    <!-- </Grid> -->
     <Grid>
         <TextBlock Width="70" Height="25" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="62,69,0,0" Grid.Column="1">Port</TextBlock>
         <TextBlock Width="70" Height="25" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="62,135,0,0" Grid.Column="1">IP Address</TextBlock>

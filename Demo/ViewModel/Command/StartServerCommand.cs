@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -13,7 +14,6 @@ namespace ChatApp.View.Command
         public event EventHandler CanExecuteChanged;
         private MainWindowViewModel parent = null;
 
-
         public StartServerCommand(MainWindowViewModel parent)
         {
             this.parent = parent;
@@ -26,7 +26,7 @@ namespace ChatApp.View.Command
 
         public void Execute(object parameter)
         {
-
+            // Debug.WriteLine("test from command");
             parent.StartServerFunc();
         }
     }

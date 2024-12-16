@@ -17,7 +17,6 @@ namespace ChatApp.ViewModel
     {
 
         private NetworkManager NetworkManager { get; set; }
-        private ICommand startGame;
         private ICommand startServer;
         private ICommand startClient;
 
@@ -60,20 +59,6 @@ namespace ChatApp.ViewModel
             {
                 var message = NetworkManager.Message;
                 this.MyText = message;
-            }
-        }
-
-        public ICommand StartGame
-        {
-            get
-            {
-                if (startGame == null)
-                    startGame = new StartGameCommand(this);
-                return startGame;
-            }
-            set
-            {
-                startGame = value;
             }
         }
 
@@ -129,11 +114,16 @@ namespace ChatApp.ViewModel
         }
 
 
-
         // NEW STUFF
         public void StartServerFunc()
         {
+
+            ChatWindow cw = new ChatWindow();
+            cw.Show();
+            Application.Current.MainWindow.Close();
+            // cw.CloseParent();
             // start server (ip, port, username)
+            
         }
 
         public void StartClientFunc()
@@ -144,21 +134,20 @@ namespace ChatApp.ViewModel
 
 
 
-        private ICommand enterCommand;
-        public ICommand EnterCommand
-        {
-            get {
-                if (enterCommand == null)
-                {
-                    return new Command.KeyEnterCommand(this);
-                }
-                else {
-                    return enterCommand;
-
-                }
-            }
-            set { enterCommand = value; }
-        }
+        // private ICommand enterCommand;
+        // public ICommand EnterCommand
+        // {
+        //     get {
+        //         if (enterCommand == null)
+        //         {
+        //             return new Command.KeyEnterCommand(this);
+        //         }
+        //         else {
+        //             return enterCommand;
+        //         }
+        //     }
+        //     set { enterCommand = value; }
+        // }
 
         public void sendMessage()
         {
