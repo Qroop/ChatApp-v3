@@ -3,24 +3,38 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Diagnostics;
 using System.Linq;
+using System.Linq.Expressions;
 using System.Net;
 using System.Net.Sockets;
 using System.Runtime.CompilerServices;
+using System.Runtime.Remoting.Channels;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
 
 namespace ChatApp.Model
 {
-    internal class NetworkManager : INotifyPropertyChanged
+    public class NetworkManager : INotifyPropertyChanged
     {
-        bool isServer;
+        private bool isServer;
+        public bool IsServer { get; set; }
         int port;
         IPAddress address;
 
+        public event EventHandler OnApproved;
+        public event EventHandler<string> OnRejected;
         private NetworkStream stream;
 
         public event PropertyChangedEventHandler PropertyChanged;
+
+        public NetworkManager(bool isServer, IPAddress address, int port)
+        {
+            this.isServer = isServer;
+            this.address = address;
+            this.port = port;
+
+            startConnection();
+        }
 
         private void OnPropertyChanged(string propertyName = "")
         {
@@ -47,7 +61,7 @@ namespace ChatApp.Model
                 TcpListener server = new TcpListener(ipEndPoint);
                 TcpClient endPoint = null;
 
-                if(isServer)
+                if(this.isServer)
                 {
                     try
                     {
@@ -55,6 +69,7 @@ namespace ChatApp.Model
                         Debug.WriteLine("Start listening...");
                         endPoint = server.AcceptTcpClient();
                         Debug.WriteLine("Connection accepted!");
+                        sendChar("DENIED");
                         handleConnection(endPoint);
                     }
                     catch (Exception ex)
@@ -68,13 +83,17 @@ namespace ChatApp.Model
                     {
                         Debug.WriteLine("Connecting to the server...");
                         endPoint.Connect(ipEndPoint);
-                        Debug.WriteLine("Connection established!");
+                        Debug.WriteLine("Connection established. Waiting for approval.");
+                        // Avgör om den får eller inte
                         handleConnection(endPoint);
+                    }
+                    catch (Exception ex)
+                    {
+                        Debug.WriteLine("Error connecting to server: " + ex.ToString());
                     }
                     finally
                     {
                         endPoint.Close();
-
                     }
                 }
             });
@@ -90,12 +109,23 @@ namespace ChatApp.Model
             {
                 var buffer = new byte[1024];
                 int received = stream.Read(buffer, 0, 1024);
+
+                if (received == 0) {  break; }
+
                 var message = Encoding.UTF8.GetString(buffer, 0, received);
                 this.Message = message;
 
+                if(message == "APPROVED")
+                {
+                    OnApproved?.Invoke(this, EventArgs.Empty);
+                }
+                else if (message == "DENIED")
+                {
+                    OnRejected?.Invoke(this, "Client denied by server.");
+                }
             }
-
         }
+
         public void sendChar(string str)
         {
             Task.Factory.StartNew(() =>
@@ -103,6 +133,23 @@ namespace ChatApp.Model
                 var buffer = Encoding.UTF8.GetBytes(str);
                 stream.Write(buffer, 0, str.Length);
             });
+        }
+
+        public Task<bool> WaitForServerApproval(NetworkManager networkManager)
+        {
+            var tcs = new TaskCompletionSource<bool>();
+
+            networkManager.OnApproved += (sender, args) =>
+            {
+                tcs.SetResult(true);
+            };
+
+            networkManager.OnRejected += (sender, error) =>
+            {
+                tcs.SetResult(false);
+            };
+
+            return tcs.Task;
         }
     }
 }

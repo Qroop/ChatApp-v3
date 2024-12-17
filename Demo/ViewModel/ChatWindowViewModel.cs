@@ -15,6 +15,18 @@ namespace ChatApp.ViewModel
 {
     internal class ChatWindowViewModel : INotifyPropertyChanged
     {
+        private NetworkManager networkManager;
+        public NetworkManager NetworkManager
+        {
+            get{ return networkManager; }
+            set{ networkManager = value; }
+        }
+
+        public ChatWindowViewModel(NetworkManager networkManager) 
+        {
+            NetworkManager = networkManager;
+        }
+
         public event PropertyChangedEventHandler PropertyChanged;
         private void OnPropertyChanged([CallerMemberName] string propertyName = "")
         {

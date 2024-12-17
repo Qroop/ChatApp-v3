@@ -10,7 +10,7 @@
         <TextBlock Width="70" Height="25" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="62,69,0,0" Grid.Column="1">Port</TextBlock>
         <TextBlock Width="70" Height="25" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="62,135,0,0" Grid.Column="1">IP Address</TextBlock>
 
-        <TextBox x:Name="PortField" Width="200" Height="25" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="154,69,0,0" Grid.Column="1">1337</TextBox>
+        <TextBox Text="{Binding Path=Port, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Width="200" Height="25" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="154,69,0,0" Grid.Column="1" />
         <TextBox Text="{Binding Path=Ip, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Width="200" Height="25" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="154,135,0,0" Grid.Column="1" />
 
         <Button Width="70" Height="25" HorizontalAlignment="Center" VerticalAlignment="Top" Command="{Binding Path=StartServer}" Margin="0,300,0,0" Grid.Column="1">
@@ -20,7 +20,8 @@
             Start Client
         </Button>
         <TextBox x:Name="username" Width="200" Height="25" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="154,195,0,0"  Text="jeswa464"/>
-        <TextBlock Width="70" Height="25" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="62,200,0,0" Grid.Column="1">Nem</TextBlock>
+        <TextBlock Width="70" Height="25" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="62,200,0,0" Grid.Column="1">Name</TextBlock>
+        <TextBlock Width="116" Height="25" HorizontalAlignment="Center" VerticalAlignment="Top" Text="{Binding Path=WaitingText, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Margin="0,340, 0, 0" />
     </Grid>
 
 </Window>

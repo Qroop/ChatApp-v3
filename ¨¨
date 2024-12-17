@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -13,8 +13,6 @@ using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
 using ChatApp.ViewModel;
 using ChatApp.Model;
-using System.Net;
-using System.Diagnostics;
 
 namespace ChatApp.View
 {
@@ -23,10 +21,10 @@ namespace ChatApp.View
     /// </summary>
     public partial class ChatWindow : Window
     {
-        public ChatWindow(NetworkManager networkManager)
+        public ChatWindow(bool isServer)
         {
             InitializeComponent();
-            this.DataContext = new ChatWindowViewModel(networkManager);
+            this.DataContext = new ChatWindowViewModel(new NetworkManager(isServer));
         }
     }
 }
