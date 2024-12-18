@@ -60,9 +60,14 @@
     </ApplicationDefinition>
     <Compile Include="Model\NetworkManager.cs" />
     <Compile Include="ViewModel\ChatWindowViewModel.cs" />
+    <Compile Include="ViewModel\Command\AcceptCommand.cs" />
+    <Compile Include="ViewModel\Command\DeclineCommand.cs" />
     <Compile Include="ViewModel\Command\StartClientCommand.cs" />
     <Compile Include="ViewModel\Command\StartServerCommand.cs" />
     <Compile Include="ViewModel\MainWindowViewModel.cs" />
+    <Compile Include="View\AccessPopup.xaml.cs">
+      <DependentUpon>AccessPopup.xaml</DependentUpon>
+    </Compile>
     <Compile Include="View\ChatWindow.xaml.cs">
       <DependentUpon>ChatWindow.xaml</DependentUpon>
     </Compile>
@@ -78,6 +83,10 @@
       <DependentUpon>MainWindow.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
+    <Page Include="View\AccessPopup.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="View\ChatWindow.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>

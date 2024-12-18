@@ -25,7 +25,7 @@ namespace ChatApp.ViewModel
 
         private string ip = "127.0.0.1";
         private int port = 42069;
-        private string text;
+        private string username = "jeswa278";
         private string waitingText = "";
         public string WaitingText
         { 
@@ -43,14 +43,14 @@ namespace ChatApp.ViewModel
         
         public string Ip { get { return ip; } set { ip = value; } }
         public int Port { get { return port; } set { port = value; } }
-        public string MyText { 
+        public string Username { 
             get {
 
-                return text; } 
+                return username; } 
             set 
             { 
-                text = value;
-                OnPropertyChanged("MyText");
+                username = value;
+                OnPropertyChanged("Username");
             } 
         }
         
@@ -131,7 +131,7 @@ namespace ChatApp.ViewModel
         private NetworkManager EstablishConnection(bool isServer)
         {
             IPAddress address = IPAddress.Parse(Ip);
-            return new NetworkManager(isServer, address, this.Port);
+            return new NetworkManager(isServer, address, this.port, Username);
         }
 
         public void StartServerFunc()
@@ -140,6 +140,7 @@ namespace ChatApp.ViewModel
             cw.Show();
             Application.Current.MainWindow.Close();
         }
+
 
         public async void StartClientFunc()
         {
@@ -157,7 +158,7 @@ namespace ChatApp.ViewModel
             }
             catch
             {
-                this.WaitingText = "DENIED";
+                this.WaitingText = "Denied";
             }
 
             if (status)

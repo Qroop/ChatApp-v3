@@ -12,27 +12,30 @@ using System.Runtime.Remoting.Channels;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
+using System.Text.RegularExpressions;
+using ChatApp.View;
 
 namespace ChatApp.Model
 {
     public class NetworkManager : INotifyPropertyChanged
     {
+        private string username;
         private bool isServer;
-        public bool IsServer { get; set; }
         readonly int port;
         readonly IPAddress address;
-        private ObservableCollection<string> observableCollection = new ObservableCollection<string>;
+        private ObservableCollection<string> observableCollection = new ObservableCollection<string>();
         public event EventHandler OnApproved;
         public event EventHandler<string> OnRejected;
         private NetworkStream stream;
 
         public event PropertyChangedEventHandler PropertyChanged;
 
-        public NetworkManager(bool isServer, IPAddress address, int port)
+        public NetworkManager(bool isServer, IPAddress address, int port, string username)
         {
             this.isServer = isServer;
             this.address = address;
             this.port = port;
+            this.username = username;
 
             startConnection();
         }
@@ -71,7 +74,6 @@ namespace ChatApp.Model
                         endPoint = server.AcceptTcpClient();
                         Debug.WriteLine("Connection accepted!");
                         handleConnection(endPoint);
-                        // sendChar("DENIED");
                     }
                     catch (Exception ex)
                     {
@@ -85,6 +87,9 @@ namespace ChatApp.Model
                         Debug.WriteLine("Connecting to the server...");
                         endPoint.Connect(ipEndPoint);
                         Debug.WriteLine("Connection established. Waiting for approval.");
+                        // Skicka användarnamn till servern
+                        this.stream = endPoint.GetStream();
+                        sendChar(this.username + "~?");
                         handleConnection(endPoint);
                     }
                     catch (Exception ex)
@@ -120,7 +125,22 @@ namespace ChatApp.Model
 
                 Debug.WriteLine("Message received: " + message + " server: " + isServer);
 
-                if(message == "APPROVED")
+                // regex \A\w+~\?\z
+                Regex regex = new Regex(@"\A\w+~\?\z");
+                
+                if (regex.IsMatch(message))
+                {
+                    Debug.WriteLine("It's a match!");
+
+                    Application.Current.Dispatcher.Invoke(() =>
+                    {
+                        AccessPopup apa = new AccessPopup(this);
+                        apa.Show();
+                        apa.ButtonNo.Click += (object sender, RoutedEventArgs e) => { apa.Close(); };
+                        apa.ButtonYes.Click += (object sender, RoutedEventArgs e) => { apa.Close(); };
+                    });
+                }
+                else if (message == "APPROVED")
                 {
                     OnApproved?.Invoke(this, EventArgs.Empty);
                 }

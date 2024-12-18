@@ -1,14 +1,14 @@
+﻿using ChatApp.ViewModel;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Input;
-using ChatApp.ViewModel;
 
-namespace ChatApp.View.Command
+namespace ChatApp.ViewModel.Command
 {
-    internal class DeclineCommand: ICommand
+    internal class DeclineCommand : ICommand
     {
         public event EventHandler CanExecuteChanged;
         private ChatWindowViewModel parent = null;
@@ -26,6 +26,7 @@ namespace ChatApp.View.Command
 
         public void Execute(object parameter)
         {
+
             parent.DeclineConnection();
         }
     }

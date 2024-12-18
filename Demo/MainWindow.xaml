@@ -19,7 +19,7 @@
         <Button Width="70" Height="25" HorizontalAlignment="Center" VerticalAlignment="Top" Command="{Binding Path=StartClient}" Margin="0,260,0,0" Grid.Column="1">
             Start Client
         </Button>
-        <TextBox x:Name="username" Width="200" Height="25" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="154,195,0,0"  Text="jeswa464"/>
+        <TextBox x:Name="username" Width="200" Height="25" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="154,195,0,0"  Text="{Binding Path=Username, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
         <TextBlock Width="70" Height="25" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="62,200,0,0" Grid.Column="1">Name</TextBlock>
         <TextBlock Width="116" Height="25" HorizontalAlignment="Center" VerticalAlignment="Top" Text="{Binding Path=WaitingText, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Margin="0,340, 0, 0" />
     </Grid>

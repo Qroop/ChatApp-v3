@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Diagnostics;
 using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Text;
@@ -10,6 +11,7 @@ using System.Windows.Input;
 using ChatApp.Model;
 using ChatApp.View;
 using ChatApp.ViewModel;
+using ChatApp.ViewModel.Command;
 
 namespace ChatApp.ViewModel
 {
@@ -24,6 +26,8 @@ namespace ChatApp.ViewModel
 
         private ICommand accept;
         private ICommand decline;
+        private string username = "placeholder";
+        public string Username { get { return username; } set { username = value; } }
 
         public ChatWindowViewModel(NetworkManager networkManager) 
         {
@@ -43,8 +47,8 @@ namespace ChatApp.ViewModel
         {
             get 
             {
-                if(accept == null)
-                    accept = new AcceptCommand(this); 
+                if (accept == null)
+                    accept = new AcceptCommand(this);
                 return accept;
             }
             set 
@@ -68,12 +72,13 @@ namespace ChatApp.ViewModel
 
         public void AcceptConnection()
         {
-
+            this.networkManager.sendChar("APPROVED");
         }
+
 
         public void DeclineConnection()
         {
-
+            this.networkManager.sendChar("DENIED");
         }
     }
 }
