@@ -23,5 +23,4 @@
         <TextBlock Width="70" Height="25" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="62,200,0,0" Grid.Column="1">Name</TextBlock>
         <TextBlock Width="116" Height="25" HorizontalAlignment="Center" VerticalAlignment="Top" Text="{Binding Path=WaitingText, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Margin="0,340, 0, 0" />
     </Grid>
-
 </Window>

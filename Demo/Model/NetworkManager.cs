@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Diagnostics;
 using System.Linq;
@@ -18,9 +19,9 @@ namespace ChatApp.Model
     {
         private bool isServer;
         public bool IsServer { get; set; }
-        int port;
-        IPAddress address;
-
+        readonly int port;
+        readonly IPAddress address;
+        private ObservableCollection<string> observableCollection = new ObservableCollection<string>;
         public event EventHandler OnApproved;
         public event EventHandler<string> OnRejected;
         private NetworkStream stream;
@@ -69,8 +70,8 @@ namespace ChatApp.Model
                         Debug.WriteLine("Start listening...");
                         endPoint = server.AcceptTcpClient();
                         Debug.WriteLine("Connection accepted!");
-                        sendChar("DENIED");
                         handleConnection(endPoint);
+                        // sendChar("DENIED");
                     }
                     catch (Exception ex)
                     {
@@ -84,7 +85,6 @@ namespace ChatApp.Model
                         Debug.WriteLine("Connecting to the server...");
                         endPoint.Connect(ipEndPoint);
                         Debug.WriteLine("Connection established. Waiting for approval.");
-                        // Avgör om den får eller inte
                         handleConnection(endPoint);
                     }
                     catch (Exception ex)
@@ -99,9 +99,8 @@ namespace ChatApp.Model
             });
 
             return true;
-
-
         }
+
         private void handleConnection(TcpClient endPoint)
         {
             stream = endPoint.GetStream();
@@ -110,7 +109,11 @@ namespace ChatApp.Model
                 var buffer = new byte[1024];
                 int received = stream.Read(buffer, 0, 1024);
 
-                if (received == 0) {  break; }
+                if (received == 0) 
+                { 
+                    Debug.WriteLine("received == 0, closing connection.");
+                    break; 
+                }
 
                 var message = Encoding.UTF8.GetString(buffer, 0, received);
                 this.Message = message;
@@ -130,11 +133,12 @@ namespace ChatApp.Model
 
         public void sendChar(string str)
         {
-            //Task.Factory.StartNew(() =>
-            //{
+            Debug.WriteLine("sendChar(" + str + ")");
+            Task.Factory.StartNew(() =>
+            {
                 var buffer = Encoding.UTF8.GetBytes(str);
                 stream.Write(buffer, 0, str.Length);
-            // });
+            });
         }
 
         public Task<bool> WaitForServerApproval(NetworkManager networkManager)

@@ -9,7 +9,7 @@ using System.Windows;
 using System.Windows.Input;
 using ChatApp.Model;
 using ChatApp.View;
-using ChatApp.View.Command;
+using ChatApp.ViewModel;
 
 namespace ChatApp.ViewModel
 {
@@ -21,6 +21,9 @@ namespace ChatApp.ViewModel
             get{ return networkManager; }
             set{ networkManager = value; }
         }
+
+        private ICommand accept;
+        private ICommand decline;
 
         public ChatWindowViewModel(NetworkManager networkManager) 
         {
@@ -34,6 +37,43 @@ namespace ChatApp.ViewModel
             {
                 PropertyChanged(this, new PropertyChangedEventArgs(propertyName));
             }
+        }
+
+        public ICommand Accept
+        {
+            get 
+            {
+                if(accept == null)
+                    accept = new AcceptCommand(this); 
+                return accept;
+            }
+            set 
+            {
+                accept = value;
+            }
+        }
+        public ICommand Decline
+        {
+            get
+            {
+                if(decline == null)
+                    decline = new DeclineCommand(this);
+                return decline;
+            }
+            set
+            {
+                decline = value;
+            }
+        }
+
+        public void AcceptConnection()
+        {
+
+        }
+
+        public void DeclineConnection()
+        {
+
         }
     }
 }
