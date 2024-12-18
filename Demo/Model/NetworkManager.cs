@@ -115,6 +115,8 @@ namespace ChatApp.Model
                 var message = Encoding.UTF8.GetString(buffer, 0, received);
                 this.Message = message;
 
+                Debug.WriteLine("Message received: " + message + " server: " + isServer);
+
                 if(message == "APPROVED")
                 {
                     OnApproved?.Invoke(this, EventArgs.Empty);
@@ -128,11 +130,11 @@ namespace ChatApp.Model
 
         public void sendChar(string str)
         {
-            Task.Factory.StartNew(() =>
-            {
+            //Task.Factory.StartNew(() =>
+            //{
                 var buffer = Encoding.UTF8.GetBytes(str);
                 stream.Write(buffer, 0, str.Length);
-            });
+            // });
         }
 
         public Task<bool> WaitForServerApproval(NetworkManager networkManager)
@@ -142,11 +144,13 @@ namespace ChatApp.Model
             networkManager.OnApproved += (sender, args) =>
             {
                 tcs.SetResult(true);
+                Debug.WriteLine("Client approved");
             };
 
             networkManager.OnRejected += (sender, error) =>
             {
                 tcs.SetResult(false);
+                Debug.WriteLine("Client denied");
             };
 
             return tcs.Task;
