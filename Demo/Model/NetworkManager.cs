@@ -27,8 +27,12 @@ namespace ChatApp.Model
         public event EventHandler OnApproved;
         public event EventHandler<string> OnRejected;
         private NetworkStream stream;
+        private List<Message> messages = new List<Message>();
+        private string receiver = "jeswa278";
 
         public event PropertyChangedEventHandler PropertyChanged;
+
+        bool historySent = false;
 
         public NetworkManager(bool isServer, IPAddress address, int port, string username)
         {
@@ -57,8 +61,6 @@ namespace ChatApp.Model
 
         public bool startConnection()
         {
-
-
             Task.Factory.StartNew(() =>
             {
                 var ipEndPoint = new IPEndPoint(address, port);
@@ -89,7 +91,7 @@ namespace ChatApp.Model
                         Debug.WriteLine("Connection established. Waiting for approval.");
                         // Skicka användarnamn till servern
                         this.stream = endPoint.GetStream();
-                        sendChar(this.username + "~?");
+                        sendReq(this.username + "~?");
                         handleConnection(endPoint);
                     }
                     catch (Exception ex)
@@ -120,12 +122,20 @@ namespace ChatApp.Model
                     break; 
                 }
 
+                if(isServer && !historySent)
+                {
+                    if(this.messages.Count > 0)
+                    {
+                        sendHistory();
+                    }
+                    this.historySent = true;
+                }
+
                 var message = Encoding.UTF8.GetString(buffer, 0, received);
                 this.Message = message;
 
                 Debug.WriteLine("Message received: " + message + " server: " + isServer);
 
-                // regex \A\w+~\?\z
                 Regex regex = new Regex(@"\A\w+~\?\z");
                 
                 if (regex.IsMatch(message))
@@ -134,7 +144,7 @@ namespace ChatApp.Model
 
                     Application.Current.Dispatcher.Invoke(() =>
                     {
-                        AccessPopup apa = new AccessPopup(this);
+                        AccessPopup apa = new AccessPopup(this, message);
                         apa.Show();
                         apa.ButtonNo.Click += (object sender, RoutedEventArgs e) => { apa.Close(); };
                         apa.ButtonYes.Click += (object sender, RoutedEventArgs e) => { apa.Close(); };
@@ -148,15 +158,41 @@ namespace ChatApp.Model
                 {
                     OnRejected?.Invoke(this, "Client denied by server.");
                 }
+                else
+                {
+                    Message objMessage = new Message(message);
+                    this.messages.Add(objMessage);
+                }
+            }
+        }
+
+        private void sendHistory()
+        {
+            foreach(Message message in this.messages)
+            {
+                string stringMessage = message.ToString();
+                sendChar(stringMessage);
             }
         }
 
         public void sendChar(string str)
         {
-            Debug.WriteLine("sendChar(" + str + ")");
+            Message message = new Message(this.username, this.receiver, str);
+            string stringMessage = message.ToString();
+            Debug.WriteLine("sendChar(" + stringMessage + ")");
             Task.Factory.StartNew(() =>
             {
-                var buffer = Encoding.UTF8.GetBytes(str);
+                byte[] buffer = Encoding.UTF8.GetBytes(stringMessage);
+                stream.Write(buffer, 0, stringMessage.Length);
+            });
+            this.messages.Add(message);
+        }
+
+        public void sendReq(string str)
+        {
+            Task.Factory.StartNew(() =>
+            {
+                byte[] buffer = Encoding.UTF8.GetBytes(str);
                 stream.Write(buffer, 0, str.Length);
             });
         }

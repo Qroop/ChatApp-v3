@@ -64,10 +64,10 @@
                          Margin="0,0,10,0" Height="30" Width="500" 
                          VerticalContentAlignment="Center"
                          Background="White" 
-                         BorderBrush="#cccccc"/>
+                         BorderBrush="#cccccc" Text="{Binding Path=Message, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
                 <Button Content="Send" Width="70" Height="30" VerticalAlignment="Center" 
                         Background="#007ACC" Foreground="White" 
-                        BorderBrush="Transparent"/>
+                        BorderBrush="Transparent" Command="{Binding Path=SendMessage}"/>
             </StackPanel>
         </Grid>
     </Grid>

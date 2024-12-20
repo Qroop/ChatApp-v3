@@ -1,9 +1,8 @@
-using System;
+﻿using System;
 using System.Diagnostics;
 
-namespace ChatApp.myModel_PropertyChanged
+namespace ChatApp.Model
 {
-    
     struct Message
     {
         public string Id { get; set; }

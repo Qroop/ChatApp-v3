@@ -22,11 +22,10 @@ namespace ChatApp.View
     /// </summary>
     public partial class AccessPopup : Window
     {
-        public AccessPopup(NetworkManager nwm)
-        {
-            this.DataContext = new ChatWindowViewModel(nwm);
+        public AccessPopup(NetworkManager nwm, string username)
+        { 
+            this.DataContext = new ChatWindowViewModel(nwm, username);
             InitializeComponent();
         }
-
     }
 }

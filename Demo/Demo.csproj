@@ -58,8 +58,10 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="Model\Message.cs" />
     <Compile Include="Model\NetworkManager.cs" />
     <Compile Include="ViewModel\ChatWindowViewModel.cs" />
+    <Compile Include="ViewModel\Command\SendMessage.cs" />
     <Compile Include="ViewModel\Command\AcceptCommand.cs" />
     <Compile Include="ViewModel\Command\DeclineCommand.cs" />
     <Compile Include="ViewModel\Command\StartClientCommand.cs" />

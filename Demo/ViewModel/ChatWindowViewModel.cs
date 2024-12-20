@@ -26,11 +26,14 @@ namespace ChatApp.ViewModel
 
         private ICommand accept;
         private ICommand decline;
+        private ICommand sendMessage;
         private string username = "placeholder";
         public string Username { get { return username; } set { username = value; } }
+        
 
-        public ChatWindowViewModel(NetworkManager networkManager) 
+        public ChatWindowViewModel(NetworkManager networkManager, string username = "~?") 
         {
+            this.Username = username.Substring(0, username.Length - 2);
             NetworkManager = networkManager;
         }
 
@@ -40,6 +43,21 @@ namespace ChatApp.ViewModel
             if (PropertyChanged != null)
             {
                 PropertyChanged(this, new PropertyChangedEventArgs(propertyName));
+            }
+        }
+
+        private string message;
+        public string Message { 
+            get
+            { 
+                return message; 
+            } 
+            set { 
+                if (message != value)
+                {
+                    message = value;
+                    OnPropertyChanged("Message");
+                }
             }
         }
 
@@ -70,15 +88,35 @@ namespace ChatApp.ViewModel
             }
         }
 
+        public ICommand SendMessage
+        {
+            get
+            {
+                if (sendMessage == null)
+                    sendMessage = new SendMessageCommand(this);
+                return sendMessage;
+            }
+            set
+            {
+                sendMessage = value;
+            }
+        }
         public void AcceptConnection()
         {
-            this.networkManager.sendChar("APPROVED");
+            this.networkManager.sendReq("APPROVED");
         }
 
 
         public void DeclineConnection()
         {
-            this.networkManager.sendChar("DENIED");
+            this.networkManager.sendReq("DENIED");
+        }
+
+        public void SendTheMessage()
+        {
+            Debug.WriteLine(this.Message);
+            this.networkManager.sendChar(this.Message);
+            this.Message = "";
         }
     }
 }
