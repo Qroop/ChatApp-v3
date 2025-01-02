@@ -3,7 +3,7 @@ using System.Diagnostics;
 
 namespace ChatApp.Model
 {
-    struct Message
+    public struct Message
     {
         public string Id { get; }
         public string Sender { get;}

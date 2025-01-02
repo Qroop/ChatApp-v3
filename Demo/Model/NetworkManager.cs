@@ -28,8 +28,7 @@ namespace ChatApp.Model
         public event EventHandler<string> OnRejected;
         private NetworkStream stream;
 
-        private List<Message> messages = new List<Message>();
-        private string currentReceiver = "jeswa278";
+        public string currentReceiver = "jeswa278";
         private Dictionary<string, List<Message>> conversations = new Dictionary<string, List<Message>>();
         private List<Message> currentConversation = new List<Message>();
 
@@ -56,6 +55,22 @@ namespace ChatApp.Model
         }
 
         private string message;
+
+        private List<Message> messages = new List<Message>();
+        public List<Message> Messages 
+        { 
+            get
+            {
+                return messages;
+            }
+            set
+            {
+                messages = value;
+                OnPropertyChanged(nameof(this.Messages));
+            }
+        }
+
+
         public string Message
         {
             get { return message; }
@@ -127,7 +142,7 @@ namespace ChatApp.Model
 
                 if(isServer && !historySent)
                 {
-                    if(this.messages.Count > 0)
+                    if(this.Messages.Count > 0)
                     {
                         sendHistory();
                     }
@@ -137,7 +152,7 @@ namespace ChatApp.Model
                 var message = Encoding.UTF8.GetString(buffer, 0, received);
                 this.Message = message;
 
-                Debug.WriteLine("Message received: " + message + " server: " + isServer);
+                //Debug.WriteLine("Message received: " + message + " server: " + isServer);
 
                 Regex regex = new Regex(@"\A\w+~\?\z");
                 
@@ -164,14 +179,15 @@ namespace ChatApp.Model
                 else
                 {
                     Message objMessage = new Message(message);
-                    this.messages.Add(objMessage);
+                    this.Messages.Add(objMessage);
+                    OnPropertyChanged(nameof(this.Messages));
                 }
             }
         }
 
         private void sendHistory()
         {
-            foreach(Message message in this.messages)
+            foreach(Message message in this.Messages)
             {
                 string stringMessage = message.ToString();
                 sendChar(stringMessage);
@@ -180,15 +196,17 @@ namespace ChatApp.Model
 
         public void sendChar(string str)
         {
-            Message message = new Message(this.username, this.receiver, str, this.isServer);
+            Message message = new Message(this.username, this.currentReceiver, str, this.isServer);
             string stringMessage = message.ToString();
-            Debug.WriteLine("sendChar(" + stringMessage + ")");
+            //Debug.WriteLine("sendChar(" + stringMessage + ")");
             Task.Factory.StartNew(() =>
             {
                 byte[] buffer = Encoding.UTF8.GetBytes(stringMessage);
                 stream.Write(buffer, 0, stringMessage.Length);
             });
-            this.messages.Add(message);
+            this.Messages.Add(message);
+
+            OnPropertyChanged(nameof(this.Messages));
         }
 
         public void sendReq(string str)

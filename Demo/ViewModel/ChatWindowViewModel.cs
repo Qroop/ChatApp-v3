@@ -1,13 +1,18 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Diagnostics;
 using System.Linq;
 using System.Runtime.CompilerServices;
+using System.Runtime.InteropServices;
+using System.Runtime.Remoting.Messaging;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
+using System.Windows.Controls;
 using System.Windows.Input;
+using System.Xml.Linq;
 using ChatApp.Model;
 using ChatApp.View;
 using ChatApp.ViewModel;
@@ -29,16 +34,27 @@ namespace ChatApp.ViewModel
         private ICommand sendMessage;
         private string username = "placeholder";
         public string Username { get { return username; } set { username = value; } }
+
+        private ObservableCollection<Message> messages = new ObservableCollection<Message>();
+        public ObservableCollection<Message> Messages { get { return messages; } set { messages = value; OnPropertyChanged(nameof(Messages)); } }
+        
         
 
         public ChatWindowViewModel(NetworkManager networkManager, string username = "~?") 
         {
             this.Username = username.Substring(0, username.Length - 2);
-            NetworkManager = networkManager;
+            this.networkManager = networkManager;
+            Messages = new ObservableCollection<Message>(networkManager.Messages);
+            this.networkManager.PropertyChanged += UpdateMessages;
+        }
+
+        private void UpdateMessages(object sender, PropertyChangedEventArgs e)
+        {
+            this.Messages = new ObservableCollection<Message>(this.networkManager.Messages);
         }
 
         public event PropertyChangedEventHandler PropertyChanged;
-        private void OnPropertyChanged([CallerMemberName] string propertyName = "")
+        public void OnPropertyChanged([CallerMemberName] string propertyName = "")
         {
             if (PropertyChanged != null)
             {
@@ -58,6 +74,19 @@ namespace ChatApp.ViewModel
                     message = value;
                     OnPropertyChanged("Message");
                 }
+            }
+        }
+        private string chattingWith = "Chatting with ...";
+        public string ChattingWith
+        {
+            get
+            {
+                return chattingWith;
+            }
+            set
+            {
+                this.chattingWith = $"Chatting with {value}";
+                OnPropertyChanged("ChattingWith");
             }
         }
 
@@ -114,9 +143,10 @@ namespace ChatApp.ViewModel
 
         public void SendTheMessage()
         {
-            Debug.WriteLine(this.Message);
-            this.networkManager.sendChar(this.Message);
+            //Debug.WriteLine(this.Message);
+            this.NetworkManager.sendChar(this.Message);
             this.Message = "";
+            OnPropertyChanged("Message");
         }
     }
 }
