@@ -49,8 +49,8 @@
             <ScrollViewer Grid.Row="0" Background="White" VerticalScrollBarVisibility="Auto" Name="ChatBox">
                 <StackPanel Name="ChatMessages" Margin="10">
                     <TextBlock Text="{Binding Path=ChattingWith, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
-                    <ListView ItemsSource="{Binding Messages}">
-                        <ListView.ItemTemplate>
+                    <ListBox ItemsSource="{Binding Messages}">
+                        <ListBox.ItemTemplate>
                             <DataTemplate>
                                 <StackPanel>
                                     <TextBlock Text="{Binding Sender}"/>
@@ -58,8 +58,8 @@
                                     <TextBlock Text="{Binding Timestamp}"/>
                                 </StackPanel>
                             </DataTemplate>
-                        </ListView.ItemTemplate>
-                    </ListView>
+                        </ListBox.ItemTemplate>
+                    </ListBox>
                     <!-- Sample message bubbles, replace with actual message binding -->
                     <!--<Border Background="#fafad2" CornerRadius="10" Margin="0,5,50,5">
                         <TextBlock Text="Hello, how are you?" FontSize="14"/>

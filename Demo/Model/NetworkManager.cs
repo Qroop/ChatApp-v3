@@ -14,9 +14,14 @@ using System.Threading.Tasks;
 using System.Windows;
 using System.Text.RegularExpressions;
 using ChatApp.View;
+using System.IO;
+using System.Text.Json;
 
 namespace ChatApp.Model
 {
+    using History = Dictionary<string, List<Message>>;
+    using Database = Dictionary<string, Dictionary<string, List<Message>>>;
+
     public class NetworkManager : INotifyPropertyChanged
     {
         private string username;
@@ -27,9 +32,10 @@ namespace ChatApp.Model
         public event EventHandler OnApproved;
         public event EventHandler<string> OnRejected;
         private NetworkStream stream;
-
         public string currentReceiver = "jeswa278";
-        private Dictionary<string, List<Message>> conversations = new Dictionary<string, List<Message>>();
+
+        private Database database = new Database();
+        private History conversations = new History();
         private List<Message> currentConversation = new List<Message>();
 
         public event PropertyChangedEventHandler PropertyChanged;
@@ -42,6 +48,15 @@ namespace ChatApp.Model
             this.address = address;
             this.port = port;
             this.username = username;
+
+            if (isServer)
+            {
+                // Read from json
+                this.database = ReadJson();
+                //this.conversations = database[username];
+            }
+
+
 
             startConnection();
         }
@@ -75,6 +90,16 @@ namespace ChatApp.Model
         {
             get { return message; }
             set { message = value; OnPropertyChanged("Message"); }
+        }
+
+        private Database ReadJson()
+        {
+            string FileName = @"..\..\Model\db.json";
+            string content = File.ReadAllText(FileName);
+            var db = JsonSerializer.Deserialize<Dictionary<string, string>>(content);
+            Debug.WriteLine(db);
+
+            return null;
         }
 
         public bool startConnection()
@@ -167,22 +192,34 @@ namespace ChatApp.Model
                         apa.ButtonNo.Click += (object sender, RoutedEventArgs e) => { apa.Close(); };
                         apa.ButtonYes.Click += (object sender, RoutedEventArgs e) => { apa.Close(); };
                     });
+                    continue;
                 }
                 else if (message == "APPROVED")
                 {
                     OnApproved?.Invoke(this, EventArgs.Empty);
+                    continue;
                 }
                 else if (message == "DENIED")
                 {
                     OnRejected?.Invoke(this, "Client denied by server.");
+                    continue;
                 }
-                else
-                {
-                    Message objMessage = new Message(message);
-                    this.Messages.Add(objMessage);
-                    OnPropertyChanged(nameof(this.Messages));
-                }
+
+                AddMessage(message);
             }
+        }
+
+        private void AddMessage(string msg)
+        {
+            Message objMessage = new Message(msg);
+            this.Messages.Add(objMessage);
+
+            /*
+            Om du är servern
+            1. 
+             */
+
+            OnPropertyChanged(nameof(this.Messages));
         }
 
         private void sendHistory()
@@ -196,7 +233,16 @@ namespace ChatApp.Model
 
         public void sendChar(string str)
         {
-            Message message = new Message(this.username, this.currentReceiver, str, this.isServer);
+            Message message;
+            try
+            {
+                message = new Message(str);
+            }
+            catch (Exception e) { Debug.WriteLine(e); }
+            finally
+            {
+                message = new Message(this.username, this.currentReceiver, str, this.isServer);
+            }
             string stringMessage = message.ToString();
             //Debug.WriteLine("sendChar(" + stringMessage + ")");
             Task.Factory.StartNew(() =>

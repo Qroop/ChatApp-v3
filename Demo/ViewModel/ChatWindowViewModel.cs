@@ -38,7 +38,6 @@ namespace ChatApp.ViewModel
         private ObservableCollection<Message> messages = new ObservableCollection<Message>();
         public ObservableCollection<Message> Messages { get { return messages; } set { messages = value; OnPropertyChanged(nameof(Messages)); } }
         
-        
 
         public ChatWindowViewModel(NetworkManager networkManager, string username = "~?") 
         {
