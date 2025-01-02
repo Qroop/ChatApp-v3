@@ -27,8 +27,11 @@ namespace ChatApp.Model
         public event EventHandler OnApproved;
         public event EventHandler<string> OnRejected;
         private NetworkStream stream;
+
         private List<Message> messages = new List<Message>();
-        private string receiver = "jeswa278";
+        private string currentReceiver = "jeswa278";
+        private Dictionary<string, List<Message>> conversations = new Dictionary<string, List<Message>>();
+        private List<Message> currentConversation = new List<Message>();
 
         public event PropertyChangedEventHandler PropertyChanged;
 
@@ -177,7 +180,7 @@ namespace ChatApp.Model
 
         public void sendChar(string str)
         {
-            Message message = new Message(this.username, this.receiver, str);
+            Message message = new Message(this.username, this.receiver, str, this.isServer);
             string stringMessage = message.ToString();
             Debug.WriteLine("sendChar(" + stringMessage + ")");
             Task.Factory.StartNew(() =>
@@ -214,6 +217,19 @@ namespace ChatApp.Model
             };
 
             return tcs.Task;
+        }
+
+        private void LoadHistory()
+        {
+            
+        }
+        
+        private void SwtichConversation(string user)
+        {
+            // Om konversationen är tom?
+            // Det kanske redan är hanterat
+            this.currentReceiver = user;
+            this.currentConversation = conversations[user];
         }
     }
 }

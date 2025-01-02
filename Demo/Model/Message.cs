@@ -5,19 +5,21 @@ namespace ChatApp.Model
 {
     struct Message
     {
-        public string Id { get; set; }
-        public string Sender { get; set; }
-        public string Receiver { get; set; }
-        public string Content { get; set; }
-        public DateTime Timestamp { get; set; }
+        public string Id { get; }
+        public string Sender { get;}
+        public string Receiver { get; }
+        public string Content { get; }
+        public DateTime Timestamp { get; }
+        public bool SentFromServer { get; }
 
-        public Message(string sender, string reciever, string content)
+        public Message(string sender, string reciever, string content, bool sentFromServer)
         {
             Sender = sender;
             Receiver = reciever;
             Content = content;
             Id = Guid.NewGuid().ToString();
             Timestamp = DateTime.Now;
+            SentFromServer = sentFromServer;
         }
 
         public Message(string deconstructed)
@@ -25,13 +27,14 @@ namespace ChatApp.Model
             // Split the input string by the delimiter '~'
             string[] parts = deconstructed.Split('~');
 
-            if (parts.Length >= 5)
+            if (parts.Length >= 6)
             {
-                Id = parts[0];  // Assuming Id is a string
-                Sender = parts[1];  // Assuming Sender is a string
-                Receiver = parts[2];  // Assuming Receiver is a string
-                Content = parts[3];  // Assuming Content is a string
-                Timestamp = DateTime.Parse(parts[4]);  // Assuming Timestamp is a DateTime
+                Id = parts[0];  
+                Sender = parts[1];  
+                Receiver = parts[2];  
+                Content = parts[3];  
+                Timestamp = DateTime.Parse(parts[4]);  
+                SentFromServer = bool.Parse(parts[5]);
             }
             else
             {
@@ -46,6 +49,7 @@ namespace ChatApp.Model
             Receiver = other.Receiver;
             Content = other.Content;
             Timestamp = other.Timestamp;
+            SentFromServer = other.SentFromServer;
         }
 
         public override string ToString()
@@ -54,9 +58,10 @@ namespace ChatApp.Model
             product += Id + "~";
             product += Sender + "~";
             product += Receiver + "~";
-            product += Content += "~";
-            product += Timestamp.ToString();
-            //Debug.WriteLine("Product in Message constructor: " + product);
+            product += Content + "~";
+            product += Timestamp.ToString() + "~";
+            product += SentFromServer.ToString();
+
             return product;
         }
     }
