@@ -1,31 +1,28 @@
-﻿using System;
+﻿using ChatApp.View;
+using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Diagnostics;
-using System.Linq;
-using System.Linq.Expressions;
+using System.IO;
 using System.Net;
 using System.Net.Sockets;
-using System.Runtime.CompilerServices;
-using System.Runtime.Remoting.Channels;
 using System.Text;
+using System.Text.Json;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Windows;
-using System.Text.RegularExpressions;
-using ChatApp.View;
-using System.IO;
-using System.Text.Json;
 
 namespace ChatApp.Model
 {
-    using History = Dictionary<string, List<Message>>;
     using Database = Dictionary<string, Dictionary<string, List<Message>>>;
+    using History = Dictionary<string, List<Message>>;
 
     public class NetworkManager : INotifyPropertyChanged
     {
         private string username;
         private bool isServer;
+        private bool hasRecievedUsername = false;
         readonly int port;
         readonly IPAddress address;
         private ObservableCollection<string> observableCollection = new ObservableCollection<string>();
@@ -36,7 +33,6 @@ namespace ChatApp.Model
 
         private Database database = new Database();
         private History conversations = new History();
-        private List<Message> currentConversation = new List<Message>();
 
         public event PropertyChangedEventHandler PropertyChanged;
 
@@ -51,12 +47,8 @@ namespace ChatApp.Model
 
             if (isServer)
             {
-                // Read from json
                 this.database = ReadJson();
-                //this.conversations = database[username];
             }
-
-
 
             startConnection();
         }
@@ -72,8 +64,8 @@ namespace ChatApp.Model
         private string message;
 
         private List<Message> messages = new List<Message>();
-        public List<Message> Messages 
-        { 
+        public List<Message> Messages
+        {
             get
             {
                 return messages;
@@ -96,10 +88,33 @@ namespace ChatApp.Model
         {
             string FileName = @"..\..\Model\db.json";
             string content = File.ReadAllText(FileName);
-            var db = JsonSerializer.Deserialize<Dictionary<string, string>>(content);
-            Debug.WriteLine(db);
+            Dictionary<string, Dictionary<string, List<string>>> temp = JsonSerializer.Deserialize<Dictionary<string, Dictionary<string, List<string>>>>(content);
 
-            return null;
+            Database db = new Database();
+            foreach (string server in temp.Keys)
+            {
+                db.Add(server, new Dictionary<string, List<Model.Message>>());
+                foreach (string client in temp[server].Keys)
+                {
+                    db[server].Add(client, new List<Model.Message>());
+                    foreach (string message in temp[server][client])
+                    {
+                        db[server][client].Add(new Model.Message(message));
+                    }
+                }
+            }
+
+            if(db.ContainsKey(this.username))
+            {
+                this.conversations = db[this.username];
+            }
+            else
+            {
+                this.conversations = new History();
+            }
+            //db.TryGetValue(this.username, this.conversations);
+            // O(n * m * x) <-- mycket vackert, eller hur?
+            return db;
         }
 
         public bool startConnection()
@@ -110,13 +125,15 @@ namespace ChatApp.Model
                 TcpListener server = new TcpListener(ipEndPoint);
                 TcpClient endPoint = null;
 
-                if(this.isServer)
+                if (this.isServer)
                 {
                     try
                     {
                         server.Start();
                         Debug.WriteLine("Start listening...");
                         endPoint = server.AcceptTcpClient();
+                        //this.Messages = this.database[this.username][this.currentReceiver];
+                        //OnPropertyChanged(nameof(this.Messages));
                         Debug.WriteLine("Connection accepted!");
                         handleConnection(endPoint);
                     }
@@ -124,7 +141,8 @@ namespace ChatApp.Model
                     {
                         Debug.WriteLine("Error starting server: " + ex.ToString());
                     }
-                } else
+                }
+                else
                 {
                     endPoint = new TcpClient();
                     try
@@ -159,32 +177,25 @@ namespace ChatApp.Model
                 var buffer = new byte[1024];
                 int received = stream.Read(buffer, 0, 1024);
 
-                if (received == 0) 
-                { 
-                    Debug.WriteLine("received == 0, closing connection.");
-                    break; 
-                }
-
-                if(isServer && !historySent)
+                if (received == 0)
                 {
-                    if(this.Messages.Count > 0)
-                    {
-                        sendHistory();
-                    }
-                    this.historySent = true;
+                    Debug.WriteLine("received == 0, closing connection.");
+                    break;
                 }
 
                 var message = Encoding.UTF8.GetString(buffer, 0, received);
-                this.Message = message;
 
-                //Debug.WriteLine("Message received: " + message + " server: " + isServer);
-
-                Regex regex = new Regex(@"\A\w+~\?\z");
-                
-                if (regex.IsMatch(message))
+                if (!isServer && this.hasRecievedUsername)
                 {
-                    Debug.WriteLine("It's a match!");
+                    // Debug.WriteLine($"\n\n\n{message}\n\n\n");
+                    this.currentReceiver = message;
+                    this.hasRecievedUsername = false;
+                    continue;
+                }
 
+                Regex username = new Regex(@"\A\w+~\?\z");
+                if (username.IsMatch(message))
+                {
                     Application.Current.Dispatcher.Invoke(() =>
                     {
                         AccessPopup apa = new AccessPopup(this, message);
@@ -192,11 +203,13 @@ namespace ChatApp.Model
                         apa.ButtonNo.Click += (object sender, RoutedEventArgs e) => { apa.Close(); };
                         apa.ButtonYes.Click += (object sender, RoutedEventArgs e) => { apa.Close(); };
                     });
+                    this.currentReceiver = message.Substring(0, message.Length - 2);
                     continue;
                 }
                 else if (message == "APPROVED")
                 {
                     OnApproved?.Invoke(this, EventArgs.Empty);
+                    this.hasRecievedUsername = true;
                     continue;
                 }
                 else if (message == "DENIED")
@@ -213,36 +226,12 @@ namespace ChatApp.Model
         {
             Message objMessage = new Message(msg);
             this.Messages.Add(objMessage);
-
-            /*
-            Om du är servern
-            1. 
-             */
-
             OnPropertyChanged(nameof(this.Messages));
-        }
-
-        private void sendHistory()
-        {
-            foreach(Message message in this.Messages)
-            {
-                string stringMessage = message.ToString();
-                sendChar(stringMessage);
-            }
         }
 
         public void sendChar(string str)
         {
-            Message message;
-            try
-            {
-                message = new Message(str);
-            }
-            catch (Exception e) { Debug.WriteLine(e); }
-            finally
-            {
-                message = new Message(this.username, this.currentReceiver, str, this.isServer);
-            }
+            Message message = new Message(this.username, this.currentReceiver, str, this.isServer);
             string stringMessage = message.ToString();
             //Debug.WriteLine("sendChar(" + stringMessage + ")");
             Task.Factory.StartNew(() =>
@@ -250,6 +239,7 @@ namespace ChatApp.Model
                 byte[] buffer = Encoding.UTF8.GetBytes(stringMessage);
                 stream.Write(buffer, 0, stringMessage.Length);
             });
+            Debug.WriteLine(stringMessage);
             this.Messages.Add(message);
 
             OnPropertyChanged(nameof(this.Messages));
@@ -261,7 +251,36 @@ namespace ChatApp.Model
             {
                 byte[] buffer = Encoding.UTF8.GetBytes(str);
                 stream.Write(buffer, 0, str.Length);
+                if (str == "APPROVED") { AcceptClient(); }
             });
+        }
+
+        private void AcceptClient()
+        {
+            if(this.conversations.ContainsKey(this.currentReceiver)) 
+            {
+                this.Messages = this.conversations[this.currentReceiver];
+            }
+            else 
+            { 
+                this.Messages = new List<Message>(); 
+            }
+            OnPropertyChanged(nameof(this.Messages));
+
+            Task.Factory.StartNew(() =>
+            {
+                byte[] buffer = Encoding.UTF8.GetBytes(this.username);
+                stream.Write(buffer, 0, this.username.Length);
+            });
+
+            foreach (Model.Message message in this.Messages)
+            {
+                Task.Factory.StartNew(() =>
+                {
+                    byte[] buffer = Encoding.UTF8.GetBytes(message.ToString());
+                    stream.Write(buffer, 0, message.ToString().Length);
+                });
+            }
         }
 
         public Task<bool> WaitForServerApproval(NetworkManager networkManager)
@@ -283,17 +302,41 @@ namespace ChatApp.Model
             return tcs.Task;
         }
 
-        private void LoadHistory()
+        public void SwtichUser(string clientUsername) 
         {
-            
+            this.conversations[this.currentReceiver] = this.Messages;
+            this.currentReceiver = clientUsername;
+            this.Messages = this.conversations[this.currentReceiver];
         }
-        
-        private void SwtichConversation(string user)
+
+        public void Disconnect()
         {
-            // Om konversationen är tom?
-            // Det kanske redan är hanterat
-            this.currentReceiver = user;
-            this.currentConversation = conversations[user];
+            this.stream.Close();
+            if(!isServer)
+            {
+                return;
+            }
+
+            this.conversations[this.currentReceiver] = this.Messages;
+            this.database[this.username] = this.conversations;
+            var temp = new Dictionary<string, Dictionary<string, List<string>>>();
+
+            foreach (string server in this.database.Keys)
+            {
+                temp.Add(server, new Dictionary<string, List<string>>());
+                foreach (string client in this.database[server].Keys)
+                {
+                    temp[server].Add(client, new List<string>());
+                    foreach (Message message in this.database[server][client])
+                    {
+                        temp[server][client].Add(message.ToString());
+                    }
+                }
+
+            }
+            string jsonString = JsonSerializer.Serialize(temp, new JsonSerializerOptions { WriteIndented = true });
+            // Debug.WriteLine(jsonString);
+            File.WriteAllText(@"..\..\Model\db.json", jsonString);
         }
     }
 }

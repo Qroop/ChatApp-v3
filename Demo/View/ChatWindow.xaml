@@ -6,7 +6,9 @@
         xmlns:local="clr-namespace:ChatApp.View"
         mc:Ignorable="d" 
         Height="450" Width="800"
-        Title="Chat">
+        Title="Chat"
+        Closing="CloseConnection"
+>
 
     <Grid>
         <Grid.ColumnDefinitions>

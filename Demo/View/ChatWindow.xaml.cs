@@ -13,6 +13,7 @@ using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
 using ChatApp.ViewModel;
 using ChatApp.Model;
+using System.ComponentModel;
 using System.Net;
 using System.Diagnostics;
 
@@ -27,6 +28,14 @@ namespace ChatApp.View
         {
             InitializeComponent();
             this.DataContext = new ChatWindowViewModel(networkManager);
+        }
+
+        public void CloseConnection(object sender, CancelEventArgs e)
+        {
+            if(this.DataContext is  ChatWindowViewModel viewModel)
+            {
+                viewModel.CloseConnection();
+            }
         }
     }
 }

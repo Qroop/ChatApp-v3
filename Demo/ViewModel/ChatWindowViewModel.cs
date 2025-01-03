@@ -132,6 +132,7 @@ namespace ChatApp.ViewModel
         public void AcceptConnection()
         {
             this.networkManager.sendReq("APPROVED");
+
         }
 
 
@@ -146,6 +147,11 @@ namespace ChatApp.ViewModel
             this.NetworkManager.sendChar(this.Message);
             this.Message = "";
             OnPropertyChanged("Message");
+        }
+
+        public void CloseConnection()
+        {
+            this.NetworkManager.Disconnect();
         }
     }
 }
