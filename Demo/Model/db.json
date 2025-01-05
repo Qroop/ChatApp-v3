@@ -3,7 +3,21 @@
     "vetinte": [
       "6e3246da-2fcc-4252-a83f-11974b77a02c~vetinte~anton~teiojhioerjierg~2025-01-03 15:33:10~False",
       "4a56069f-292f-4c08-8e09-adb47d7ca5ff~anton~vetinte~wefwefwefw~2025-01-03 15:33:13~True",
-      "11f3ff6c-3a06-42c7-840f-52be857a97b7~anton~vetinte~APPROVED~2025-01-03 15:33:19~True"
+      "11f3ff6c-3a06-42c7-840f-52be857a97b7~anton~vetinte~APPROVED~2025-01-03 15:33:19~True",
+      "9c302ebf-af2b-41b7-be71-4c46b398cfe4~vetinte~anton~dsdfsdfsd~2025-01-05 11:35:01~False",
+      "9c540e02-a80b-4b9e-8811-4f391a576bc4~anton~vetinte~fsdgggsd~2025-01-05 11:35:09~True",
+      "01a5d891-6ebc-42a7-819d-a5d1396b73d4~vetinte~anton~ffsd24444~2025-01-05 11:35:13~False",
+      "79eb7dfe-4fc1-482e-84c9-3ad00f7853cc~anton~vetinte~74467567~2025-01-05 11:35:16~True"
+    ]
+  },
+  "server": {
+    "client": [
+      "e7fc5e4a-734b-4059-8d35-836f5801dc24~server~client~dfgdgfdfg~2025-01-05 11:41:38~True",
+      "be83f3ff-15f7-4dae-8ac1-3d52becb8785~client~server~dsfdfgg~2025-01-05 11:41:44~False",
+      "67c18f5a-dd90-4bc1-bad0-02f1b2b5b77d~server~client~\u00F6\u00E4\u00E5~2025-01-05 11:41:49~True",
+      "72135917-a19f-4f7e-977b-95beed648fa0~server~client~dsfdf~2025-01-05 11:43:01~True",
+      "ef4d41f1-317b-4251-a291-60bb6e8405e0~client~server~1234~2025-01-05 11:43:04~False",
+      "14b4990f-a799-494e-b686-6c774996cd38~client~server~\u00E5\u00E4\u00F6~2025-01-05 11:43:08~False"
     ]
   }
 }

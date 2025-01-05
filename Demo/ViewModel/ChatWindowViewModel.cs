@@ -50,6 +50,7 @@ namespace ChatApp.ViewModel
         private void UpdateMessages(object sender, PropertyChangedEventArgs e)
         {
             this.Messages = new ObservableCollection<Message>(this.networkManager.Messages);
+            this.ChattingWith = this.NetworkManager.currentReceiver;
         }
 
         public event PropertyChangedEventHandler PropertyChanged;

@@ -10,6 +10,7 @@ using System.Net.Sockets;
 using System.Text;
 using System.Text.Json;
 using System.Text.RegularExpressions;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
 
@@ -20,23 +21,20 @@ namespace ChatApp.Model
 
     public class NetworkManager : INotifyPropertyChanged
     {
-        private string username;
-        private bool isServer;
+        private readonly string username;
+        private readonly bool isServer;
         private bool hasRecievedUsername = false;
         readonly int port;
         readonly IPAddress address;
-        private ObservableCollection<string> observableCollection = new ObservableCollection<string>();
         public event EventHandler OnApproved;
         public event EventHandler<string> OnRejected;
         private NetworkStream stream;
-        public string currentReceiver = "jeswa278";
+        public string currentReceiver;
 
         private Database database = new Database();
         private History conversations = new History();
 
         public event PropertyChangedEventHandler PropertyChanged;
-
-        bool historySent = false;
 
         public NetworkManager(bool isServer, IPAddress address, int port, string username)
         {
@@ -112,8 +110,6 @@ namespace ChatApp.Model
             {
                 this.conversations = new History();
             }
-            //db.TryGetValue(this.username, this.conversations);
-            // O(n * m * x) <-- mycket vackert, eller hur?
             return db;
         }
 
@@ -132,8 +128,6 @@ namespace ChatApp.Model
                         server.Start();
                         Debug.WriteLine("Start listening...");
                         endPoint = server.AcceptTcpClient();
-                        //this.Messages = this.database[this.username][this.currentReceiver];
-                        //OnPropertyChanged(nameof(this.Messages));
                         Debug.WriteLine("Connection accepted!");
                         handleConnection(endPoint);
                     }
@@ -150,7 +144,6 @@ namespace ChatApp.Model
                         Debug.WriteLine("Connecting to the server...");
                         endPoint.Connect(ipEndPoint);
                         Debug.WriteLine("Connection established. Waiting for approval.");
-                        // Skicka användarnamn till servern
                         this.stream = endPoint.GetStream();
                         sendReq(this.username + "~?");
                         handleConnection(endPoint);
@@ -184,10 +177,10 @@ namespace ChatApp.Model
                 }
 
                 var message = Encoding.UTF8.GetString(buffer, 0, received);
+                Debug.WriteLine($"Received {message}");
 
                 if (!isServer && this.hasRecievedUsername)
                 {
-                    // Debug.WriteLine($"\n\n\n{message}\n\n\n");
                     this.currentReceiver = message;
                     this.hasRecievedUsername = false;
                     continue;
@@ -198,10 +191,10 @@ namespace ChatApp.Model
                 {
                     Application.Current.Dispatcher.Invoke(() =>
                     {
-                        AccessPopup apa = new AccessPopup(this, message);
-                        apa.Show();
-                        apa.ButtonNo.Click += (object sender, RoutedEventArgs e) => { apa.Close(); };
-                        apa.ButtonYes.Click += (object sender, RoutedEventArgs e) => { apa.Close(); };
+                        AccessPopup accessPopup = new AccessPopup(this, message);
+                        accessPopup.Show();
+                        accessPopup.ButtonNo.Click += (object sender, RoutedEventArgs e) => { accessPopup.Close(); };
+                        accessPopup.ButtonYes.Click += (object sender, RoutedEventArgs e) => { accessPopup.Close(); };
                     });
                     this.currentReceiver = message.Substring(0, message.Length - 2);
                     continue;
@@ -209,6 +202,7 @@ namespace ChatApp.Model
                 else if (message == "APPROVED")
                 {
                     OnApproved?.Invoke(this, EventArgs.Empty);
+                    OnPropertyChanged();
                     this.hasRecievedUsername = true;
                     continue;
                 }
@@ -233,13 +227,8 @@ namespace ChatApp.Model
         {
             Message message = new Message(this.username, this.currentReceiver, str, this.isServer);
             string stringMessage = message.ToString();
-            //Debug.WriteLine("sendChar(" + stringMessage + ")");
-            Task.Factory.StartNew(() =>
-            {
-                byte[] buffer = Encoding.UTF8.GetBytes(stringMessage);
-                stream.Write(buffer, 0, stringMessage.Length);
-            });
-            Debug.WriteLine(stringMessage);
+            sendMessage(stringMessage);
+            
             this.Messages.Add(message);
 
             OnPropertyChanged(nameof(this.Messages));
@@ -247,11 +236,18 @@ namespace ChatApp.Model
 
         public void sendReq(string str)
         {
+            sendMessage(str);
+            if (str == "APPROVED") 
+            { AcceptClient(); }
+        }
+
+        private void sendMessage(string message)
+        {
+            Debug.WriteLine("Sending message: " + message);
             Task.Factory.StartNew(() =>
             {
-                byte[] buffer = Encoding.UTF8.GetBytes(str);
-                stream.Write(buffer, 0, str.Length);
-                if (str == "APPROVED") { AcceptClient(); }
+                byte[] buffer = Encoding.UTF8.GetBytes(message);
+                this.stream.Write(buffer, 0, buffer.Length);
             });
         }
 
@@ -267,19 +263,12 @@ namespace ChatApp.Model
             }
             OnPropertyChanged(nameof(this.Messages));
 
-            Task.Factory.StartNew(() =>
-            {
-                byte[] buffer = Encoding.UTF8.GetBytes(this.username);
-                stream.Write(buffer, 0, this.username.Length);
-            });
+            sendMessage(this.username);
 
             foreach (Model.Message message in this.Messages)
             {
-                Task.Factory.StartNew(() =>
-                {
-                    byte[] buffer = Encoding.UTF8.GetBytes(message.ToString());
-                    stream.Write(buffer, 0, message.ToString().Length);
-                });
+                sendMessage(message.ToString());
+                Thread.Sleep(1);
             }
         }
 
@@ -335,7 +324,6 @@ namespace ChatApp.Model
 
             }
             string jsonString = JsonSerializer.Serialize(temp, new JsonSerializerOptions { WriteIndented = true });
-            // Debug.WriteLine(jsonString);
             File.WriteAllText(@"..\..\Model\db.json", jsonString);
         }
     }
