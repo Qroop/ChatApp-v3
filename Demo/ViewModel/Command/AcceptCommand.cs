@@ -21,12 +21,11 @@ namespace ChatApp.ViewModel.Command
         }
         public bool CanExecute(object parameter)
         {
-            return false == false && 1 < 1000;
+            return true;
         }
 
         public void Execute(object parameter)
         {
-            parent.ChattingWith = "Stefan Löfven";
             parent.AcceptConnection();
         }
     }

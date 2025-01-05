@@ -1,68 +1,50 @@
 ﻿using System;
 using System.Diagnostics;
+using System.Text.Json;
+using System.Text.Json.Serialization;
 
 namespace ChatApp.Model
 {
-    public struct Message
+    public class Message
     {
-        public string Id { get; }
-        public string Sender { get;}
-        public string Receiver { get; }
-        public string Content { get; }
-        public DateTime Timestamp { get; }
-        public bool SentFromServer { get; }
+        [JsonPropertyName("Request")]
+        public string Request { get; set; }
 
-        public Message(string sender, string reciever, string content, bool sentFromServer)
+        [JsonPropertyName("Sender")]
+        public string Sender { get; set; }
+
+        [JsonPropertyName("Receiver")]
+        public string Receiver { get; set; }
+
+        [JsonPropertyName("Content")]
+        public string Content { get; set; }
+
+        [JsonPropertyName("Timestamp")]
+        public DateTime Timestamp { get; set; }
+
+        [JsonPropertyName("SentFromServer")]
+        public bool SentFromServer { get; set; }
+
+        public Message() { }
+
+        public Message(string requestType, string sender, string reciever, string content, bool sentFromServer)
         {
+            Request = requestType;
             Sender = sender;
             Receiver = reciever;
             Content = content;
-            Id = Guid.NewGuid().ToString();
             Timestamp = DateTime.Now;
             SentFromServer = sentFromServer;
         }
 
-        public Message(string deconstructed)
+        public string ToJson()
         {
-            // Split the input string by the delimiter '~'
-            string[] parts = deconstructed.Split('~');
-
-            if (parts.Length >= 6)
-            {
-                Id = parts[0];  
-                Sender = parts[1];  
-                Receiver = parts[2];  
-                Content = parts[3];  
-                Timestamp = DateTime.Parse(parts[4]);  
-                SentFromServer = bool.Parse(parts[5]);
-            }
-            else
-            {
-                throw new ArgumentException("Invalid deconstructed string format.");
-            }
+            return JsonSerializer.Serialize(this, new JsonSerializerOptions { WriteIndented = true });
         }
 
-        public Message(Message other)
+        public static Message FromJson(string json)
         {
-            Id = other.Id;
-            Sender = other.Sender;
-            Receiver = other.Receiver;
-            Content = other.Content;
-            Timestamp = other.Timestamp;
-            SentFromServer = other.SentFromServer;
-        }
-
-        public override string ToString()
-        {
-            string product = "";
-            product += Id + "~";
-            product += Sender + "~";
-            product += Receiver + "~";
-            product += Content + "~";
-            product += Timestamp.ToString() + "~";
-            product += SentFromServer.ToString();
-
-            return product;
+            return JsonSerializer.Deserialize<Message>(json);
         }
     }
 }

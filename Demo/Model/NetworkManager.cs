@@ -1,7 +1,6 @@
 ﻿using ChatApp.View;
 using System;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Diagnostics;
 using System.IO;
@@ -9,15 +8,14 @@ using System.Net;
 using System.Net.Sockets;
 using System.Text;
 using System.Text.Json;
-using System.Text.RegularExpressions;
-using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
+using System.Windows.Media.Animation;
 
 namespace ChatApp.Model
 {
     using Database = Dictionary<string, Dictionary<string, List<Message>>>;
-    using History = Dictionary<string, List<Message>>;
+    using History = List<Tuple<string, List<Message>>>;
 
     public class NetworkManager : INotifyPropertyChanged
     {
@@ -29,10 +27,29 @@ namespace ChatApp.Model
         public event EventHandler OnApproved;
         public event EventHandler<string> OnRejected;
         private NetworkStream stream;
-        public string currentReceiver;
+        public string receiver;
+        private DateTime timeOfConnection;
 
         private Database database = new Database();
-        private History conversations = new History();
+        private History history = new History();
+
+        private Dictionary<string, List<Message>> conversationsToView = new Dictionary<string, List<Message>>();
+
+        private List<Message> toDisplay = new List<Message>();
+        public List<Message> ToDisplay { get { return toDisplay; } set { toDisplay = value; } }
+
+        private List<Tuple<string, DateTime>> conversations = new List<Tuple<string, DateTime>>();
+        public List<Tuple<string, DateTime>> Conversations 
+        {
+            get 
+            {
+                return conversations;
+            }
+            set
+            {
+                conversations = value;
+            }
+        }
 
         public event PropertyChangedEventHandler PropertyChanged;
 
@@ -47,6 +64,8 @@ namespace ChatApp.Model
             {
                 this.database = ReadJson();
             }
+
+            this.ToDisplay = this.Messages;
 
             startConnection();
         }
@@ -84,32 +103,46 @@ namespace ChatApp.Model
 
         private Database ReadJson()
         {
+            // Läs in json filen till Database
             string FileName = @"..\..\Model\db.json";
             string content = File.ReadAllText(FileName);
-            Dictionary<string, Dictionary<string, List<string>>> temp = JsonSerializer.Deserialize<Dictionary<string, Dictionary<string, List<string>>>>(content);
+            Database db = JsonSerializer.Deserialize<Database>(content);
 
-            Database db = new Database();
-            foreach (string server in temp.Keys)
+            // Skapa en ny history
+            History history = new History();
+
+            // Om inte servern finns med i databasen, returnera en ny history bara
+            if (!db.ContainsKey(this.username))
             {
-                db.Add(server, new Dictionary<string, List<Model.Message>>());
-                foreach (string client in temp[server].Keys)
+                this.history = history;
+                return db;
+            }
+
+            // conversationsToView innehåller timestamps kopplade till konversationer
+            Dictionary<string, List<Message>> conversationsToView = db[this.username];
+
+           this.conversationsToView = conversationsToView;
+
+            foreach(string timestamp in conversationsToView.Keys)
+            {
+                string client = "";
+                if (conversationsToView[timestamp].Count == 0) { continue; }
+                if (conversationsToView[timestamp][0].SentFromServer) { client = conversationsToView[timestamp][0].Receiver; }
+                else { client = conversationsToView[timestamp][0].Sender; }
+
+                history.Add(new Tuple<string, List<Message>>(client, new List<Message>()));
+
+                this.Conversations.Add(new Tuple<string, DateTime>(client, DateTime.Parse(timestamp)));
+
+                foreach(Message message in conversationsToView[timestamp])
                 {
-                    db[server].Add(client, new List<Model.Message>());
-                    foreach (string message in temp[server][client])
-                    {
-                        db[server][client].Add(new Model.Message(message));
-                    }
+                    history[history.Count - 1].Item2.Add(message);
                 }
             }
 
-            if(db.ContainsKey(this.username))
-            {
-                this.conversations = db[this.username];
-            }
-            else
-            {
-                this.conversations = new History();
-            }
+            this.Conversations.Sort((x, y) => y.Item2.CompareTo(x.Item2));
+
+            OnPropertyChanged(nameof(this.Conversations));
             return db;
         }
 
@@ -129,6 +162,7 @@ namespace ChatApp.Model
                         Debug.WriteLine("Start listening...");
                         endPoint = server.AcceptTcpClient();
                         Debug.WriteLine("Connection accepted!");
+                        this.timeOfConnection = DateTime.Now;
                         handleConnection(endPoint);
                     }
                     catch (Exception ex)
@@ -145,7 +179,6 @@ namespace ChatApp.Model
                         endPoint.Connect(ipEndPoint);
                         Debug.WriteLine("Connection established. Waiting for approval.");
                         this.stream = endPoint.GetStream();
-                        sendReq(this.username + "~?");
                         handleConnection(endPoint);
                     }
                     catch (Exception ex)
@@ -177,99 +210,99 @@ namespace ChatApp.Model
                 }
 
                 var message = Encoding.UTF8.GetString(buffer, 0, received);
-                Debug.WriteLine($"Received {message}");
+                Message messageObj = Model.Message.FromJson(message);
+                Debug.WriteLine($"Received {messageObj.Content}");
 
-                if (!isServer && this.hasRecievedUsername)
+                if (!isServer && !this.hasRecievedUsername)
                 {
-                    this.currentReceiver = message;
-                    this.hasRecievedUsername = false;
-                    continue;
+                    Debug.WriteLine("Received username: " + messageObj.Sender);
+                    this.receiver = messageObj.Sender;
+                    this.hasRecievedUsername = true;
+                    OnPropertyChanged(nameof(this.receiver));
                 }
 
-                Regex username = new Regex(@"\A\w+~\?\z");
-                if (username.IsMatch(message))
+                if(this.receiver == null && isServer)
                 {
+                    OnPropertyChanged();
                     Application.Current.Dispatcher.Invoke(() =>
                     {
-                        AccessPopup accessPopup = new AccessPopup(this, message);
+                        AccessPopup accessPopup = new AccessPopup(this, messageObj.Sender);
                         accessPopup.Show();
                         accessPopup.ButtonNo.Click += (object sender, RoutedEventArgs e) => { accessPopup.Close(); };
-                        accessPopup.ButtonYes.Click += (object sender, RoutedEventArgs e) => { accessPopup.Close(); };
+                        accessPopup.ButtonYes.Click += (object sender, RoutedEventArgs e) => 
+                        {
+                            Debug.WriteLine("In Dispatcher.Invoke block");
+                            accessPopup.Close();
+                            this.receiver = messageObj.Sender;
+                            Debug.WriteLine($"Receiver: {this.receiver}");
+                            this.Conversations.Insert(0, new Tuple<string, DateTime>(this.receiver, this.timeOfConnection));
+                            Debug.WriteLine(this.Conversations[0].Item1);
+                            OnPropertyChanged(nameof(this.Conversations));
+                            Debug.WriteLine("Conversation added");
+                        };
                     });
-                    this.currentReceiver = message.Substring(0, message.Length - 2);
                     continue;
                 }
-                else if (message == "APPROVED")
+                else if(messageObj.Request == "ConnectionResponse")
                 {
-                    OnApproved?.Invoke(this, EventArgs.Empty);
-                    OnPropertyChanged();
-                    this.hasRecievedUsername = true;
-                    continue;
+                    if (messageObj.Content == "APPROVED")
+                    {
+                        OnApproved?.Invoke(this, EventArgs.Empty);
+                        OnPropertyChanged();
+                        continue;
+                    }
+                    else if (messageObj.Content == "DENIED")
+                    {
+                        OnRejected?.Invoke(this, "Client denied by server.");
+                        continue;
+                    }
                 }
-                else if (message == "DENIED")
-                {
-                    OnRejected?.Invoke(this, "Client denied by server.");
-                    continue;
-                }
-
-                AddMessage(message);
+                AddMessage(messageObj);
+                OnPropertyChanged(nameof(this.Messages));
             }
         }
 
-        private void AddMessage(string msg)
+        private void AddMessage(Message message)
         {
-            Message objMessage = new Message(msg);
-            this.Messages.Add(objMessage);
+            this.Messages.Add(message);
             OnPropertyChanged(nameof(this.Messages));
         }
 
         public void sendChar(string str)
         {
-            Message message = new Message(this.username, this.currentReceiver, str, this.isServer);
+            Message message = new Message("Message", this.username, this.receiver, str, this.isServer);
             string stringMessage = message.ToString();
-            sendMessage(stringMessage);
+            sendMessage(message);
             
             this.Messages.Add(message);
 
             OnPropertyChanged(nameof(this.Messages));
         }
 
+
         public void sendReq(string str)
         {
-            sendMessage(str);
-            if (str == "APPROVED") 
-            { AcceptClient(); }
+            Debug.WriteLine("sendReq called");
+            Message message = new Message("ConnectionResponse", this.username, this.receiver, str, true);
+            sendMessage(message);
         }
 
-        private void sendMessage(string message)
+        public void sendResp(string str)
         {
-            Debug.WriteLine("Sending message: " + message);
+            Debug.WriteLine("sendResp called");
+            Message message = new Message("ConnectionRequest", this.username, this.receiver, str, false);
+            sendMessage(message);
+
+        }
+
+        private void sendMessage(Message message)
+        {
+            Debug.WriteLine("Sending message: " + message.Content + " as type: " + message.Request);
             Task.Factory.StartNew(() =>
             {
-                byte[] buffer = Encoding.UTF8.GetBytes(message);
+                byte[] buffer = Encoding.UTF8.GetBytes(message.ToJson());
                 this.stream.Write(buffer, 0, buffer.Length);
             });
-        }
-
-        private void AcceptClient()
-        {
-            if(this.conversations.ContainsKey(this.currentReceiver)) 
-            {
-                this.Messages = this.conversations[this.currentReceiver];
-            }
-            else 
-            { 
-                this.Messages = new List<Message>(); 
-            }
-            OnPropertyChanged(nameof(this.Messages));
-
-            sendMessage(this.username);
-
-            foreach (Model.Message message in this.Messages)
-            {
-                sendMessage(message.ToString());
-                Thread.Sleep(1);
-            }
         }
 
         public Task<bool> WaitForServerApproval(NetworkManager networkManager)
@@ -291,39 +324,34 @@ namespace ChatApp.Model
             return tcs.Task;
         }
 
-        public void SwtichUser(string clientUsername) 
+        public void SwitchConversation(DateTime dateTime)
         {
-            this.conversations[this.currentReceiver] = this.Messages;
-            this.currentReceiver = clientUsername;
-            this.Messages = this.conversations[this.currentReceiver];
+            Debug.WriteLine("Switching conversation to: " + dateTime.ToString());
+            if(dateTime == this.timeOfConnection)
+            {
+                this.ToDisplay = this.Messages;
+                OnPropertyChanged(nameof(ToDisplay));
+                return;
+            }
+            this.ToDisplay = conversationsToView[dateTime.ToString()];
+            OnPropertyChanged(nameof(ToDisplay));
         }
 
         public void Disconnect()
         {
             this.stream.Close();
-            if(!isServer)
+            if(!isServer || this.Messages.Count == 0)
             {
                 return;
             }
 
-            this.conversations[this.currentReceiver] = this.Messages;
-            this.database[this.username] = this.conversations;
-            var temp = new Dictionary<string, Dictionary<string, List<string>>>();
-
-            foreach (string server in this.database.Keys)
-            {
-                temp.Add(server, new Dictionary<string, List<string>>());
-                foreach (string client in this.database[server].Keys)
-                {
-                    temp[server].Add(client, new List<string>());
-                    foreach (Message message in this.database[server][client])
-                    {
-                        temp[server][client].Add(message.ToString());
-                    }
-                }
-
+            if (!this.database.ContainsKey(this.username)) 
+            { 
+                this.database.Add(this.username, new Dictionary<string, List<Message>>());
             }
-            string jsonString = JsonSerializer.Serialize(temp, new JsonSerializerOptions { WriteIndented = true });
+            this.database[this.username].Add(this.timeOfConnection.ToString(), this.Messages); 
+
+            string jsonString = JsonSerializer.Serialize(this.database, new JsonSerializerOptions { WriteIndented = true });
             File.WriteAllText(@"..\..\Model\db.json", jsonString);
         }
     }

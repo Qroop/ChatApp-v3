@@ -26,7 +26,6 @@ namespace ChatApp.View.Command
 
         public void Execute(object parameter)
         {
-            // Debug.WriteLine("test from command");
             parent.StartServerFunc();
         }
     }

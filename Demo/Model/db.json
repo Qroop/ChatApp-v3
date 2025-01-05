@@ -1,23 +1,164 @@
 {
-  "anton": {
-    "vetinte": [
-      "6e3246da-2fcc-4252-a83f-11974b77a02c~vetinte~anton~teiojhioerjierg~2025-01-03 15:33:10~False",
-      "4a56069f-292f-4c08-8e09-adb47d7ca5ff~anton~vetinte~wefwefwefw~2025-01-03 15:33:13~True",
-      "11f3ff6c-3a06-42c7-840f-52be857a97b7~anton~vetinte~APPROVED~2025-01-03 15:33:19~True",
-      "9c302ebf-af2b-41b7-be71-4c46b398cfe4~vetinte~anton~dsdfsdfsd~2025-01-05 11:35:01~False",
-      "9c540e02-a80b-4b9e-8811-4f391a576bc4~anton~vetinte~fsdgggsd~2025-01-05 11:35:09~True",
-      "01a5d891-6ebc-42a7-819d-a5d1396b73d4~vetinte~anton~ffsd24444~2025-01-05 11:35:13~False",
-      "79eb7dfe-4fc1-482e-84c9-3ad00f7853cc~anton~vetinte~74467567~2025-01-05 11:35:16~True"
+  "jeswa278S": {
+    "2025-01-05 14:38:10": [
+      {
+        "Request": "Message",
+        "Sender": "jeswa278C",
+        "Receiver": "jeswa278S",
+        "Content": "Hello Server",
+        "Timestamp": "2025-01-05T14:39:00.2602493+01:00",
+        "SentFromServer": false
+      },
+      {
+        "Request": "Message",
+        "Sender": "jeswa278S",
+        "Receiver": "jeswa278C",
+        "Content": "Hello my little cutsey client",
+        "Timestamp": "2025-01-05T14:39:21.509114+01:00",
+        "SentFromServer": true
+      },
+      {
+        "Request": "Message",
+        "Sender": "jeswa278C",
+        "Receiver": "jeswa278S",
+        "Content": "OOOOOhhh IM BLUSHING!!! :-^",
+        "Timestamp": "2025-01-05T14:39:58.5807156+01:00",
+        "SentFromServer": false
+      },
+      {
+        "Request": "Message",
+        "Sender": "jeswa278S",
+        "Receiver": "jeswa278C",
+        "Content": "Bye",
+        "Timestamp": "2025-01-05T14:40:07.8833117+01:00",
+        "SentFromServer": true
+      }
+    ],
+    "2025-01-05 15:12:23": [
+      {
+        "Request": "Message",
+        "Sender": "anton",
+        "Receiver": "jeswa278S",
+        "Content": "vxcvxcvxcvxcv",
+        "Timestamp": "2025-01-05T15:12:35.0173535+01:00",
+        "SentFromServer": false
+      },
+      {
+        "Request": "Message",
+        "Sender": "anton",
+        "Receiver": "jeswa278S",
+        "Content": "xcvxcvxcv",
+        "Timestamp": "2025-01-05T15:12:37.3434473+01:00",
+        "SentFromServer": false
+      },
+      {
+        "Request": "Message",
+        "Sender": "jeswa278S",
+        "Receiver": "anton",
+        "Content": "xvxcvxcvxcvxcvxcvxcvxcvxvcxcv",
+        "Timestamp": "2025-01-05T15:12:40.351767+01:00",
+        "SentFromServer": true
+      }
+    ],
+    "2025-01-05 15:13:17": [
+      {
+        "Request": "Message",
+        "Sender": "VetEj",
+        "Receiver": "jeswa278S",
+        "Content": "Vet inte riktight",
+        "Timestamp": "2025-01-05T15:13:30.4353725+01:00",
+        "SentFromServer": false
+      }
+    ],
+    "2025-01-05 15:21:31": [
+      {
+        "Request": "Message",
+        "Sender": "antno464",
+        "Receiver": "jeswa278S",
+        "Content": "dfsdfsf",
+        "Timestamp": "2025-01-05T15:21:42.0278889+01:00",
+        "SentFromServer": false
+      },
+      {
+        "Request": "Message",
+        "Sender": "antno464",
+        "Receiver": "jeswa278S",
+        "Content": "sdlfjsdfslkdfjskljflksdjflksdjflskdfjs",
+        "Timestamp": "2025-01-05T15:22:12.467639+01:00",
+        "SentFromServer": false
+      }
+    ],
+    "2025-01-05 16:47:57": [
+      {
+        "Request": "Message",
+        "Sender": "Andreas",
+        "Receiver": "jeswa278S",
+        "Content": "fsdfsdfsdf",
+        "Timestamp": "2025-01-05T16:48:03.7872756+01:00",
+        "SentFromServer": false
+      },
+      {
+        "Request": "Message",
+        "Sender": "jeswa278S",
+        "Receiver": "Andreas",
+        "Content": "sdfsdfsdf",
+        "Timestamp": "2025-01-05T16:48:05.7890015+01:00",
+        "SentFromServer": true
+      },
+      {
+        "Request": "Message",
+        "Sender": "jeswa278S",
+        "Receiver": "Andreas",
+        "Content": "dsfdfs",
+        "Timestamp": "2025-01-05T16:48:15.3307003+01:00",
+        "SentFromServer": true
+      },
+      {
+        "Request": "Message",
+        "Sender": "Andreas",
+        "Receiver": "jeswa278S",
+        "Content": "fgfhfghfg",
+        "Timestamp": "2025-01-05T16:48:19.6662649+01:00",
+        "SentFromServer": false
+      }
+    ],
+    "2025-01-05 17:05:02": [
+      {
+        "Request": "Message",
+        "Sender": "jeswa278S",
+        "Receiver": "Nils",
+        "Content": "sdlkjfsoidfjsdf",
+        "Timestamp": "2025-01-05T17:05:08.5857513+01:00",
+        "SentFromServer": true
+      },
+      {
+        "Request": "Message",
+        "Sender": "Nils",
+        "Receiver": "jeswa278S",
+        "Content": "sdfsdfsdfsdf",
+        "Timestamp": "2025-01-05T17:05:10.7529212+01:00",
+        "SentFromServer": false
+      },
+      {
+        "Request": "Message",
+        "Sender": "jeswa278S",
+        "Receiver": "Nils",
+        "Content": "cvbcvbcvbcvb",
+        "Timestamp": "2025-01-05T17:05:18.4249747+01:00",
+        "SentFromServer": true
+      }
     ]
   },
-  "server": {
-    "client": [
-      "e7fc5e4a-734b-4059-8d35-836f5801dc24~server~client~dfgdgfdfg~2025-01-05 11:41:38~True",
-      "be83f3ff-15f7-4dae-8ac1-3d52becb8785~client~server~dsfdfgg~2025-01-05 11:41:44~False",
-      "67c18f5a-dd90-4bc1-bad0-02f1b2b5b77d~server~client~\u00F6\u00E4\u00E5~2025-01-05 11:41:49~True",
-      "72135917-a19f-4f7e-977b-95beed648fa0~server~client~dsfdf~2025-01-05 11:43:01~True",
-      "ef4d41f1-317b-4251-a291-60bb6e8405e0~client~server~1234~2025-01-05 11:43:04~False",
-      "14b4990f-a799-494e-b686-6c774996cd38~client~server~\u00E5\u00E4\u00F6~2025-01-05 11:43:08~False"
+  "jeswa278Server": {
+    "2025-01-05 14:43:55": [
+      {
+        "Request": "Message",
+        "Sender": "jeswa278Client",
+        "Receiver": "jeswa278Server",
+        "Content": "fdgdgf",
+        "Timestamp": "2025-01-05T14:44:07.073199+01:00",
+        "SentFromServer": false
+      }
     ]
   }
 }

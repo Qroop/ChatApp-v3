@@ -105,29 +105,6 @@ namespace ChatApp.ViewModel
             }
         }
 
-        // private bool startConnection()
-        // {
-        //     return NetworkManager.startConnection();
-        // }
-
-        // public void startGameBoard()
-        // {
-
-        //     if (startConnection())
-        //     {
-        //         // GameBoard board = new GameBoard();
-        //         //board.DataContext = this;
-        //         //board.ShowDialog();
-        //     }
-        //     else
-        //     {
-        //         MessageBox.Show("Cannot start connection!");
-        //     }
-            
-            
-           
-        // }
-
         private NetworkManager EstablishConnection(bool isServer)
         {
             IPAddress address = IPAddress.Parse(Ip);
@@ -145,16 +122,14 @@ namespace ChatApp.ViewModel
         public async void StartClientFunc()
         {
             NetworkManager networkManager = EstablishConnection(false);
+            Debug.WriteLine("Client awaiting response");
+            networkManager.sendResp("I would like to join");
             this.WaitingText = "Waiting for approval...";
             bool status = false;
             
-            // 2. Wait for networkManager to give go ahead
             try
             {
                 status = await networkManager.WaitForServerApproval(networkManager);
-                // ChatWindow cw = new ChatWindow(networkManager);
-                // cw.Show();
-                // Application.Current.MainWindow.Close();
             }
             catch
             {
@@ -172,37 +147,5 @@ namespace ChatApp.ViewModel
                 this.WaitingText = "Denied";
             }
         }
-
-
-
-
-        // private ICommand enterCommand;
-        // public ICommand EnterCommand
-        // {
-        //     get {
-        //         if (enterCommand == null)
-        //         {
-        //             return new Command.KeyEnterCommand(this);
-        //         }
-        //         else {
-        //             return enterCommand;
-        //         }
-        //     }
-        //     set { enterCommand = value; }
-        // }
-
-        // public void sendMessage()
-        // {
-        //     NetworkManager.sendChar(MyText);
-        // }
-
-        //public void showGameBoard()
-        //{
-        //    GameBoard gameBoard = new GameBoard();
-        //    gameBoard.DataContext = this;
-        //    gameBoard.ShowDialog();
-        //}
-
-
     }
 }

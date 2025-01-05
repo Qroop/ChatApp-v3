@@ -5,12 +5,6 @@ using System.ComponentModel;
 using System.Diagnostics;
 using System.Linq;
 using System.Runtime.CompilerServices;
-using System.Runtime.InteropServices;
-using System.Runtime.Remoting.Messaging;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows;
-using System.Windows.Controls;
 using System.Windows.Input;
 using System.Xml.Linq;
 using ChatApp.Model;
@@ -32,25 +26,42 @@ namespace ChatApp.ViewModel
         private ICommand accept;
         private ICommand decline;
         private ICommand sendMessage;
-        private string username = "placeholder";
+        private string username;
         public string Username { get { return username; } set { username = value; } }
+
+        private Tuple<string, DateTime> selectedUser = new Tuple<string, DateTime>("", new DateTime());
+        public Tuple<string, DateTime> SelectedUser 
+        { 
+            get { return selectedUser; }
+            set 
+            { 
+                selectedUser = value; 
+                Debug.WriteLine(selectedUser.Item2);
+                this.networkManager.SwitchConversation(selectedUser.Item2);
+            } 
+        }
+
+        private ObservableCollection<Tuple<string, DateTime>> conversations = new ObservableCollection<Tuple<string, DateTime>>();
+        public ObservableCollection<Tuple<string, DateTime>> Conversations { get { return conversations; } set { conversations = value; } }
 
         private ObservableCollection<Message> messages = new ObservableCollection<Message>();
         public ObservableCollection<Message> Messages { get { return messages; } set { messages = value; OnPropertyChanged(nameof(Messages)); } }
         
 
-        public ChatWindowViewModel(NetworkManager networkManager, string username = "~?") 
+        public ChatWindowViewModel(NetworkManager networkManager, string username = "") 
         {
-            this.Username = username.Substring(0, username.Length - 2);
+            this.Username = username;
             this.networkManager = networkManager;
-            Messages = new ObservableCollection<Message>(networkManager.Messages);
+            this.Messages = new ObservableCollection<Message>(this.networkManager.ToDisplay);
+            this.Conversations = new ObservableCollection<Tuple<string, DateTime>>(this.networkManager.Conversations);
             this.networkManager.PropertyChanged += UpdateMessages;
         }
 
         private void UpdateMessages(object sender, PropertyChangedEventArgs e)
         {
-            this.Messages = new ObservableCollection<Message>(this.networkManager.Messages);
-            this.ChattingWith = this.NetworkManager.currentReceiver;
+            this.Messages = new ObservableCollection<Message>(this.networkManager.ToDisplay);
+            this.Conversations = new ObservableCollection<Tuple<string, DateTime>>(this.networkManager.Conversations);
+            this.ChattingWith = this.NetworkManager.receiver;
         }
 
         public event PropertyChangedEventHandler PropertyChanged;
@@ -133,7 +144,6 @@ namespace ChatApp.ViewModel
         public void AcceptConnection()
         {
             this.networkManager.sendReq("APPROVED");
-
         }
 
 
