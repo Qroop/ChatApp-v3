@@ -44,8 +44,21 @@ namespace ChatApp.ViewModel
         private ObservableCollection<Tuple<string, DateTime>> conversations = new ObservableCollection<Tuple<string, DateTime>>();
         public ObservableCollection<Tuple<string, DateTime>> Conversations { get { return conversations; } set { conversations = value; } }
 
+        private ObservableCollection<Tuple<string, DateTime>> conversationsToSearch;
         private ObservableCollection<Message> messages = new ObservableCollection<Message>();
         public ObservableCollection<Message> Messages { get { return messages; } set { messages = value; OnPropertyChanged(nameof(Messages)); } }
+
+        private string searchPhrase = "";
+        public string SearchPhrase { get => searchPhrase; 
+            set 
+            { 
+                searchPhrase = value; 
+                OnPropertyChanged(nameof(this.SearchPhrase));
+                FilterOnSearch();
+                // networkManager.SearchConversations(searchPhrase);
+                Debug.WriteLine(searchPhrase); 
+            } 
+        }
         
 
         public ChatWindowViewModel(NetworkManager networkManager, string username = "") 
@@ -54,6 +67,7 @@ namespace ChatApp.ViewModel
             this.networkManager = networkManager;
             this.Messages = new ObservableCollection<Message>(this.networkManager.ToDisplay);
             this.Conversations = new ObservableCollection<Tuple<string, DateTime>>(this.networkManager.Conversations);
+            this.conversationsToSearch = this.Conversations;
             this.networkManager.PropertyChanged += UpdateMessages;
         }
 
@@ -72,6 +86,24 @@ namespace ChatApp.ViewModel
                 PropertyChanged(this, new PropertyChangedEventArgs(propertyName));
             }
         }
+
+        private void FilterOnSearch()
+        {
+            if (string.IsNullOrWhiteSpace(this.SearchPhrase))
+            {
+                this.Conversations = new ObservableCollection<Tuple<string, DateTime>>(this.networkManager.Conversations);
+            }
+            else
+            {
+                var filtered = this.networkManager.Conversations
+                    .Where(session => session.Item1.IndexOf(this.SearchPhrase, StringComparison.OrdinalIgnoreCase) >= 0)
+                    .ToList();
+
+                this.Conversations = new ObservableCollection<Tuple<string, DateTime>>(filtered);
+            }
+            OnPropertyChanged(nameof(this.Conversations));
+        }
+
 
         private string message;
         public string Message { 
@@ -154,7 +186,6 @@ namespace ChatApp.ViewModel
 
         public void SendTheMessage()
         {
-            //Debug.WriteLine(this.Message);
             this.NetworkManager.sendChar(this.Message);
             this.Message = "";
             OnPropertyChanged("Message");

@@ -22,7 +22,7 @@
                        FontWeight="Bold" 
                        Foreground="White" 
                        Margin="0,0,0,10"/>
-
+            <TextBox Text="{Binding Path=SearchPhrase, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
             <ListBox Name="FriendsList" 
                      Background="#3A3C3E" 
                      Foreground="White" 

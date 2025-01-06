@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Diagnostics;
 using System.IO;
+using System.Linq;
 using System.Net;
 using System.Net.Sockets;
 using System.Text;
@@ -31,7 +32,6 @@ namespace ChatApp.Model
         private DateTime timeOfConnection;
 
         private Database database = new Database();
-        private History history = new History();
 
         private Dictionary<string, List<Message>> conversationsToView = new Dictionary<string, List<Message>>();
 
@@ -41,14 +41,8 @@ namespace ChatApp.Model
         private List<Tuple<string, DateTime>> conversations = new List<Tuple<string, DateTime>>();
         public List<Tuple<string, DateTime>> Conversations 
         {
-            get 
-            {
-                return conversations;
-            }
-            set
-            {
-                conversations = value;
-            }
+            get => conversations;
+            set => conversations = value; 
         }
 
         public event PropertyChangedEventHandler PropertyChanged;
@@ -81,6 +75,8 @@ namespace ChatApp.Model
         private string message;
 
         private List<Message> messages = new List<Message>();
+        private History history;
+
         public List<Message> Messages
         {
             get
@@ -93,7 +89,6 @@ namespace ChatApp.Model
                 OnPropertyChanged(nameof(this.Messages));
             }
         }
-
 
         public string Message
         {
@@ -339,7 +334,10 @@ namespace ChatApp.Model
 
         public void Disconnect()
         {
-            this.stream.Close();
+            if (this.stream != null)
+            {
+                this.stream.Close();
+            }
             if(!isServer || this.Messages.Count == 0)
             {
                 return;
