@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Diagnostics;
 using System.IO;
+using System.Media;
 using System.Net;
 using System.Net.Sockets;
 using System.Text;
@@ -257,6 +258,11 @@ namespace ChatApp.Model
                         OnRejected?.Invoke(this, "Client denied by server.");
                         continue;
                     }
+                } else if(messageObj.Request == "Buzz")
+                {
+                    SoundPlayer sp = new SoundPlayer(@"..\Static\buzz.wav");
+                    sp.Play();
+                    continue;
                 }
                 AddMessage(messageObj);
                 OnPropertyChanged(nameof(this.Messages));
@@ -272,6 +278,11 @@ namespace ChatApp.Model
         public void sendChar(string str)
         {
             Message message = new Message("Message", this.username, this.receiver, str, this.isServer);
+            if(str == "/buzz")
+            {
+                message.Request = "Buzz";
+            }
+            
             string stringMessage = message.ToString();
             sendMessage(message);
             
