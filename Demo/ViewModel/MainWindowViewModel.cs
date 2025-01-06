@@ -111,18 +111,42 @@ namespace ChatApp.ViewModel
             return new NetworkManager(isServer, address, this.port, Username);
         }
 
-        public void StartServerFunc()
+        public async Task StartServerFunc()
         {
-            ChatWindow cw = new ChatWindow(EstablishConnection(true));
+            NetworkManager nm = EstablishConnection(true);
+            ChatWindow cw = new ChatWindow(nm);
+            int i = 0;
+            while(nm.couldConnect == null)
+            {
+                i++;
+                Debug.WriteLine($"Server waiting for status: {i}");
+                await Task.Delay(1000);
+            }
+            if (nm.couldConnect == false)
+            {
+                this.WaitingText = "Could not start server";
+                return;
+            }
+            
             cw.Show();
             Application.Current.MainWindow.Close();
         }
 
 
-        public async void StartClientFunc()
+        public async Task StartClientFunc()
         {
             NetworkManager networkManager = EstablishConnection(false);
             Debug.WriteLine("Client awaiting response");
+            while (networkManager.couldConnect == null)
+            {
+                Debug.WriteLine("Waiting for status");
+                await Task.Delay(1000);
+            }
+            if (networkManager.couldConnect == false)
+            {
+                this.WaitingText = "No server listening"; 
+                return;
+            }
             networkManager.sendResp("I would like to join");
             this.WaitingText = "Waiting for approval...";
             bool status = false;

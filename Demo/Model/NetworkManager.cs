@@ -4,7 +4,6 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Diagnostics;
 using System.IO;
-using System.Linq;
 using System.Net;
 using System.Net.Sockets;
 using System.Text;
@@ -30,6 +29,8 @@ namespace ChatApp.Model
         private NetworkStream stream;
         public string receiver;
         private DateTime timeOfConnection;
+
+        public bool? couldConnect;
 
         private Database database = new Database();
 
@@ -76,6 +77,7 @@ namespace ChatApp.Model
 
         private List<Message> messages = new List<Message>();
         private History history;
+        private bool connected;
 
         public List<Message> Messages
         {
@@ -141,7 +143,7 @@ namespace ChatApp.Model
             return db;
         }
 
-        public bool startConnection()
+        private void startConnection()
         {
             Task.Factory.StartNew(() =>
             {
@@ -155,14 +157,18 @@ namespace ChatApp.Model
                     {
                         server.Start();
                         Debug.WriteLine("Start listening...");
+                        this.couldConnect = true;
                         endPoint = server.AcceptTcpClient();
                         Debug.WriteLine("Connection accepted!");
+                        this.connected = true;
                         this.timeOfConnection = DateTime.Now;
                         handleConnection(endPoint);
                     }
                     catch (Exception ex)
                     {
                         Debug.WriteLine("Error starting server: " + ex.ToString());
+                        this.couldConnect = false;
+                        this.connected = false;
                     }
                 }
                 else
@@ -172,22 +178,20 @@ namespace ChatApp.Model
                     {
                         Debug.WriteLine("Connecting to the server...");
                         endPoint.Connect(ipEndPoint);
+                        this.couldConnect = true;
                         Debug.WriteLine("Connection established. Waiting for approval.");
                         this.stream = endPoint.GetStream();
+                        this.connected = true;
                         handleConnection(endPoint);
                     }
                     catch (Exception ex)
                     {
                         Debug.WriteLine("Error connecting to server: " + ex.ToString());
-                    }
-                    finally
-                    {
-                        endPoint.Close();
+                        this.couldConnect = false;
+                        this.connected = false;
                     }
                 }
             });
-
-            return true;
         }
 
         private void handleConnection(TcpClient endPoint)
@@ -198,15 +202,15 @@ namespace ChatApp.Model
                 var buffer = new byte[1024];
                 int received = stream.Read(buffer, 0, 1024);
 
-                if (received == 0)
-                {
-                    Debug.WriteLine("received == 0, closing connection.");
-                    break;
-                }
-
                 var message = Encoding.UTF8.GetString(buffer, 0, received);
                 Message messageObj = Model.Message.FromJson(message);
                 Debug.WriteLine($"Received {messageObj.Content}");
+
+                if(received == 0)
+                {
+                    this.stream = null;
+                    this.connected = false;
+                }
 
                 if (!isServer && !this.hasRecievedUsername)
                 {
@@ -244,10 +248,12 @@ namespace ChatApp.Model
                     {
                         OnApproved?.Invoke(this, EventArgs.Empty);
                         OnPropertyChanged();
+                        this.connected = true;
                         continue;
                     }
                     else if (messageObj.Content == "DENIED")
                     {
+                        this.connected = false;
                         OnRejected?.Invoke(this, "Client denied by server.");
                         continue;
                     }
@@ -292,6 +298,7 @@ namespace ChatApp.Model
 
         private void sendMessage(Message message)
         {
+            if(!connected) { return; }
             Debug.WriteLine("Sending message: " + message.Content + " as type: " + message.Request);
             Task.Factory.StartNew(() =>
             {
@@ -334,23 +341,37 @@ namespace ChatApp.Model
 
         public void Disconnect()
         {
-            if (this.stream != null)
+            if(this.stream.CanRead && this.stream.CanWrite && this.stream != null && this.connected)
             {
-                this.stream.Close();
+                Debug.WriteLine($"Sending message from {this.isServer.ToString()}");
+                Message closing = new Message("ConnectionStatus", this.username, this.receiver, $"{this.username} has disconnected", this.isServer);
+                sendMessage(closing);
             }
-            if(!isServer || this.Messages.Count == 0)
+            
+            if(!isServer)
             {
                 return;
             }
+
+            this.receiver = "nobody";
+            OnPropertyChanged(nameof(this.receiver));
 
             if (!this.database.ContainsKey(this.username)) 
             { 
                 this.database.Add(this.username, new Dictionary<string, List<Message>>());
             }
-            this.database[this.username].Add(this.timeOfConnection.ToString(), this.Messages); 
+            this.database[this.username].Add(this.timeOfConnection.ToString(), this.Messages);
+
+            // Ifall sista meddelandet är en connectionstatus, ta bort det.
+            if (this.database[this.username][this.timeOfConnection.ToString()][this.Messages.Count - 1].Request == "ConnectionStatus") 
+            {
+                this.database[this.username][this.timeOfConnection.ToString()].RemoveAt(Messages.Count - 1);
+            }
 
             string jsonString = JsonSerializer.Serialize(this.database, new JsonSerializerOptions { WriteIndented = true });
             File.WriteAllText(@"..\..\Model\db.json", jsonString);
+
+            this.stream.Close();
         }
     }
 }

@@ -193,6 +193,7 @@ namespace ChatApp.ViewModel
 
         public void CloseConnection()
         {
+
             this.NetworkManager.Disconnect();
         }
     }
