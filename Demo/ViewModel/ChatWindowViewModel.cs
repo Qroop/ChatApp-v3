@@ -55,7 +55,6 @@ namespace ChatApp.ViewModel
                 searchPhrase = value; 
                 OnPropertyChanged(nameof(this.SearchPhrase));
                 FilterOnSearch();
-                // networkManager.SearchConversations(searchPhrase);
                 Debug.WriteLine(searchPhrase); 
             } 
         }
@@ -76,7 +75,6 @@ namespace ChatApp.ViewModel
             this.Messages = new ObservableCollection<Message>(this.networkManager.ToDisplay);
             this.Conversations = new ObservableCollection<Tuple<string, DateTime>>(this.networkManager.Conversations);
             this.ChattingWith = this.NetworkManager.receiver;
-            OnPropertyChanged(nameof(this.Conversations));
         }
 
         public event PropertyChangedEventHandler PropertyChanged;

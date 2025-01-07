@@ -1,303 +1,95 @@
 {
   "jeswa278s": {
-    "2025-01-06 14:25:35": [
+    "2025-01-07 08:30:50": [
       {
         "Request": "Message",
-        "Sender": "jeswa278s",
-        "Receiver": "jeswa278c",
-        "Content": "wefwefwef",
-        "Timestamp": "2025-01-06T14:25:42.3899821+01:00",
-        "SentFromServer": true
-      },
-      {
-        "Request": "Message",
-        "Sender": "jeswa278c",
+        "Sender": "jeswa278",
         "Receiver": "jeswa278s",
-        "Content": "wefwefwef",
-        "Timestamp": "2025-01-06T14:25:44.4276459+01:00",
-        "SentFromServer": false
-      }
-    ],
-    "2025-01-06 14:26:20": [],
-    "2025-01-06 13:56:05": [
-      {
-        "Request": "Message",
-        "Sender": "jeswa278s",
-        "Receiver": "jeswa278c",
         "Content": "hej",
-        "Timestamp": "2025-01-06T13:56:13.6674403+01:00",
-        "SentFromServer": true
+        "Timestamp": "2025-01-07T08:30:55.851656+01:00",
+        "SentFromServer": false
       },
-      {
-        "Request": "Buzz",
-        "Sender": "jeswa278s",
-        "Receiver": "jeswa278c",
-        "Content": "/buzz",
-        "Timestamp": "2025-01-06T13:56:18.8409637+01:00",
-        "SentFromServer": true
-      }
-    ],
-    "2025-01-06 13:58:08": [
       {
         "Request": "Message",
         "Sender": "jeswa278s",
-        "Receiver": "jeswa278c",
-        "Content": "hej",
-        "Timestamp": "2025-01-06T13:58:16.5057595+01:00",
-        "SentFromServer": true
-      },
-      {
-        "Request": "Message",
-        "Sender": "jeswa278c",
-        "Receiver": "jeswa278s",
-        "Content": "",
-        "Timestamp": "2025-01-06T13:59:35.450994+01:00",
-        "SentFromServer": false
-      },
-      {
-        "Request": "Message",
-        "Sender": "jeswa278c",
-        "Receiver": "jeswa278s",
-        "Content": "",
-        "Timestamp": "2025-01-06T13:59:35.6679997+01:00",
-        "SentFromServer": false
-      },
-      {
-        "Request": "Message",
-        "Sender": "jeswa278c",
-        "Receiver": "jeswa278s",
-        "Content": "",
-        "Timestamp": "2025-01-06T13:59:40.106488+01:00",
-        "SentFromServer": false
-      },
-      {
-        "Request": "Message",
-        "Sender": "jeswa278c",
-        "Receiver": "jeswa278s",
-        "Content": "",
-        "Timestamp": "2025-01-06T13:59:40.2682783+01:00",
-        "SentFromServer": false
-      },
-      {
-        "Request": "Message",
-        "Sender": "jeswa278c",
-        "Receiver": "jeswa278s",
-        "Content": "",
-        "Timestamp": "2025-01-06T13:59:40.4637093+01:00",
-        "SentFromServer": false
-      },
-      {
-        "Request": "Message",
-        "Sender": "jeswa278c",
-        "Receiver": "jeswa278s",
-        "Content": "",
-        "Timestamp": "2025-01-06T13:59:40.6345107+01:00",
-        "SentFromServer": false
-      },
-      {
-        "Request": "Message",
-        "Sender": "jeswa278c",
-        "Receiver": "jeswa278s",
-        "Content": "",
-        "Timestamp": "2025-01-06T13:59:40.8149962+01:00",
-        "SentFromServer": false
-      },
-      {
-        "Request": "Message",
-        "Sender": "jeswa278c",
-        "Receiver": "jeswa278s",
-        "Content": "",
-        "Timestamp": "2025-01-06T13:59:40.9958744+01:00",
-        "SentFromServer": false
-      },
-      {
-        "Request": "Message",
-        "Sender": "jeswa278c",
-        "Receiver": "jeswa278s",
-        "Content": "",
-        "Timestamp": "2025-01-06T13:59:41.1756954+01:00",
-        "SentFromServer": false
-      },
-      {
-        "Request": "Message",
-        "Sender": "jeswa278c",
-        "Receiver": "jeswa278s",
-        "Content": "",
-        "Timestamp": "2025-01-06T13:59:41.5679316+01:00",
-        "SentFromServer": false
-      },
-      {
-        "Request": "Message",
-        "Sender": "jeswa278c",
-        "Receiver": "jeswa278s",
-        "Content": "",
-        "Timestamp": "2025-01-06T13:59:41.9173405+01:00",
-        "SentFromServer": false
-      },
-      {
-        "Request": "Message",
-        "Sender": "jeswa278c",
-        "Receiver": "jeswa278s",
-        "Content": "",
-        "Timestamp": "2025-01-06T13:59:42.1066488+01:00",
-        "SentFromServer": false
-      },
-      {
-        "Request": "Message",
-        "Sender": "jeswa278c",
-        "Receiver": "jeswa278s",
-        "Content": "",
-        "Timestamp": "2025-01-06T13:59:42.4559439+01:00",
-        "SentFromServer": false
-      },
-      {
-        "Request": "Message",
-        "Sender": "jeswa278c",
-        "Receiver": "jeswa278s",
-        "Content": "",
-        "Timestamp": "2025-01-06T13:59:42.8499361+01:00",
-        "SentFromServer": false
-      },
-      {
-        "Request": "Message",
-        "Sender": "jeswa278c",
-        "Receiver": "jeswa278s",
-        "Content": "",
-        "Timestamp": "2025-01-06T13:59:43.0498309+01:00",
-        "SentFromServer": false
-      },
-      {
-        "Request": "Message",
-        "Sender": "jeswa278c",
-        "Receiver": "jeswa278s",
-        "Content": "",
-        "Timestamp": "2025-01-06T13:59:43.2510838+01:00",
-        "SentFromServer": false
-      }
-    ],
-    "2025-01-06 14:02:05": [
-      {
-        "Request": "Message",
-        "Sender": "jeswa278c",
-        "Receiver": "jeswa278s",
-        "Content": null,
-        "Timestamp": "2025-01-06T14:02:19.1743848+01:00",
-        "SentFromServer": false
-      },
-      {
-        "Request": "Message",
-        "Sender": "jeswa278c",
-        "Receiver": "jeswa278s",
-        "Content": "efwefwef",
-        "Timestamp": "2025-01-06T14:02:27.7190337+01:00",
-        "SentFromServer": false
-      }
-    ],
-    "2025-01-06 14:08:03": [
-      {
-        "Request": "Message",
-        "Sender": "jeswa278s",
-        "Receiver": "jeswa278c",
-        "Content": "dasdasd",
-        "Timestamp": "2025-01-06T14:11:14.0307345+01:00",
-        "SentFromServer": true
-      },
-      {
-        "Request": "Message",
-        "Sender": "jeswa278c",
-        "Receiver": "jeswa278s",
-        "Content": "test",
-        "Timestamp": "2025-01-06T14:12:02.384344+01:00",
-        "SentFromServer": false
-      },
-      {
-        "Request": "Message",
-        "Sender": "jeswa278c",
-        "Receiver": "jeswa278s",
-        "Content": "test igen",
-        "Timestamp": "2025-01-06T14:12:08.5723761+01:00",
-        "SentFromServer": false
-      }
-    ],
-    "2025-01-07 08:14:26": []
-  },
-  "jeswa278": {
-    "2025-01-06 14:13:24": [
-      {
-        "Request": "ConnectionStatus",
-        "Sender": "bugge",
         "Receiver": "jeswa278",
-        "Content": "bugge has disconnected",
-        "Timestamp": "2025-01-06T14:13:44.2978978+01:00",
-        "SentFromServer": false
-      },
-      {
-        "Request": "Message",
-        "Sender": "jeswa278",
-        "Receiver": "bugge",
-        "Content": "lkjsefl",
-        "Timestamp": "2025-01-06T14:13:48.2635843+01:00",
-        "SentFromServer": true
-      }
-    ]
-  },
-  "bugge": {
-    "2025-01-06 14:14:20": [
-      {
-        "Request": "Message",
-        "Sender": "jeswa278",
-        "Receiver": "bugge",
-        "Content": "bismillah",
-        "Timestamp": "2025-01-06T14:14:28.1068569+01:00",
-        "SentFromServer": false
-      }
-    ],
-    "2025-01-06 14:14:57": [
-      {
-        "Request": "Message",
-        "Sender": "bugge",
-        "Receiver": "zugge",
-        "Content": "yoo",
-        "Timestamp": "2025-01-06T14:15:09.5720396+01:00",
-        "SentFromServer": true
-      },
-      {
-        "Request": "Message",
-        "Sender": "zugge",
-        "Receiver": "bugge",
-        "Content": "aaa",
-        "Timestamp": "2025-01-06T14:15:54.9853466+01:00",
-        "SentFromServer": false
-      }
-    ],
-    "2025-01-06 14:16:40": [
-      {
-        "Request": "Message",
-        "Sender": "zulle",
-        "Receiver": "bugge",
-        "Content": "bugge",
-        "Timestamp": "2025-01-06T14:17:03.7306898+01:00",
-        "SentFromServer": false
-      },
-      {
-        "Request": "Message",
-        "Sender": "bugge",
-        "Receiver": "zulle",
-        "Content": "tjena zulle",
-        "Timestamp": "2025-01-06T14:17:17.1227323+01:00",
-        "SentFromServer": true
-      }
-    ]
-  },
-  "jesper": {
-    "2025-01-07 06:52:58": [
-      {
-        "Request": "Message",
-        "Sender": "arthur",
-        "Receiver": "jesper",
         "Content": "hej",
-        "Timestamp": "2025-01-07T07:53:11.5498416+01:00",
+        "Timestamp": "2025-01-07T08:30:58.8727162+01:00",
+        "SentFromServer": true
+      }
+    ]
+  },
+  "server": {
+    "2025-01-07 08:56:04": [
+      {
+        "Request": "Message",
+        "Sender": "client",
+        "Receiver": "server",
+        "Content": "hej",
+        "Timestamp": "2025-01-07T08:56:11.7062573+01:00",
         "SentFromServer": false
+      },
+      {
+        "Request": "Message",
+        "Sender": "server",
+        "Receiver": "client",
+        "Content": "hej tillbaks",
+        "Timestamp": "2025-01-07T08:56:16.6336298+01:00",
+        "SentFromServer": true
+      }
+    ],
+    "2025-01-07 08:57:09": [
+      {
+        "Request": "Message",
+        "Sender": "client",
+        "Receiver": "server",
+        "Content": "hej",
+        "Timestamp": "2025-01-07T08:57:19.0570127+01:00",
+        "SentFromServer": false
+      },
+      {
+        "Request": "Message",
+        "Sender": "server",
+        "Receiver": "client",
+        "Content": "hej tillbaks fr\u00E5n andra chatten",
+        "Timestamp": "2025-01-07T08:57:28.0132931+01:00",
+        "SentFromServer": true
+      }
+    ],
+    "2025-01-07 09:01:12": [
+      {
+        "Request": "Message",
+        "Sender": "client3",
+        "Receiver": "server",
+        "Content": "hej fr\u00E5n tredje chatten",
+        "Timestamp": "2025-01-07T09:01:28.4500956+01:00",
+        "SentFromServer": false
+      },
+      {
+        "Request": "Message",
+        "Sender": "server",
+        "Receiver": "client3",
+        "Content": "hej",
+        "Timestamp": "2025-01-07T09:01:32.0875928+01:00",
+        "SentFromServer": true
+      }
+    ],
+    "2025-01-07 09:04:17": [
+      {
+        "Request": "Message",
+        "Sender": "client4",
+        "Receiver": "server",
+        "Content": "hej fr\u00E5n fj\u00E4rde",
+        "Timestamp": "2025-01-07T09:04:29.4027666+01:00",
+        "SentFromServer": false
+      },
+      {
+        "Request": "Message",
+        "Sender": "server",
+        "Receiver": "client4",
+        "Content": "hej",
+        "Timestamp": "2025-01-07T09:04:32.9568312+01:00",
+        "SentFromServer": true
       }
     ]
   }
