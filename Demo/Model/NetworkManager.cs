@@ -260,7 +260,7 @@ namespace ChatApp.Model
                     }
                 } else if(messageObj.Request == "Buzz")
                 {
-                    SoundPlayer sp = new SoundPlayer(@"..\Static\buzz.wav");
+                    SoundPlayer sp = new SoundPlayer(@"..\..\Static\buzz.wav");
                     sp.Play();
                     continue;
                 }
@@ -281,9 +281,10 @@ namespace ChatApp.Model
             if(str == "/buzz")
             {
                 message.Request = "Buzz";
+                sendMessage(message);
+                return;
             }
             
-            string stringMessage = message.ToString();
             sendMessage(message);
             
             this.Messages.Add(message);
@@ -374,6 +375,7 @@ namespace ChatApp.Model
             this.database[this.username].Add(this.timeOfConnection.ToString(), this.Messages);
 
             // Ifall sista meddelandet är en connectionstatus, ta bort det.
+            if (this.database[this.username][this.timeOfConnection.ToString()].Count == 0) { return; }
             if (this.database[this.username][this.timeOfConnection.ToString()][this.Messages.Count - 1].Request == "ConnectionStatus") 
             {
                 this.database[this.username][this.timeOfConnection.ToString()].RemoveAt(Messages.Count - 1);

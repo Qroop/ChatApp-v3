@@ -76,6 +76,7 @@ namespace ChatApp.ViewModel
             this.Messages = new ObservableCollection<Message>(this.networkManager.ToDisplay);
             this.Conversations = new ObservableCollection<Tuple<string, DateTime>>(this.networkManager.Conversations);
             this.ChattingWith = this.NetworkManager.receiver;
+            OnPropertyChanged(nameof(this.Conversations));
         }
 
         public event PropertyChangedEventHandler PropertyChanged;
@@ -186,6 +187,7 @@ namespace ChatApp.ViewModel
 
         public void SendTheMessage()
         {
+            if(this.Message == "") { return; }
             this.NetworkManager.sendChar(this.Message);
             this.Message = "";
             OnPropertyChanged("Message");
